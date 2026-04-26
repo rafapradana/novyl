@@ -151,4 +151,4 @@ export const BookDescription = ({
   </p>
 );
 
-export default ModernBookCover;
+export default BookCover;
