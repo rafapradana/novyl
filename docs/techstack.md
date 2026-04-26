@@ -4,7 +4,7 @@
 - UI Components: shadcn/ui
 - ORM: Drizzle
 - Auth Library: Better Auth
-- Icons: Lucide React
+- Icons: Hugeicons
 - UI Animation: Framer Motion
 - Email: Resend
 - AI Provider: OpenRouter
