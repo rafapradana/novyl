@@ -1,5 +1,22 @@
 import type { ReactNode } from "react";
 
+export const BookIcon = ({ className = "" }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+  </svg>
+);
+
 const radiusMap = {
   sm: "rounded-md",
   md: "rounded-lg",
@@ -7,6 +24,7 @@ const radiusMap = {
 };
 
 const sizeMap = {
+  xs: { width: "150px", spineTranslation: "122px" },
   sm: { width: "180px", spineTranslation: "152px" },
   md: { width: "220px", spineTranslation: "192px" },
   lg: { width: "260px", spineTranslation: "232px" },
@@ -39,11 +57,16 @@ const colorMap = {
 
 interface BookProps {
   radius?: "sm" | "md" | "lg";
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   color?: keyof typeof colorMap;
   isStatic?: boolean;
   className?: string;
   children: ReactNode;
+  onClick?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
+  tabIndex?: number;
+  role?: string;
+  "aria-label"?: string;
 }
 
 export const BookCover = ({
@@ -53,12 +76,22 @@ export const BookCover = ({
   isStatic = false,
   className = "",
   children,
+  onClick,
+  onKeyDown,
+  tabIndex,
+  role,
+  "aria-label": ariaLabel,
 }: BookProps) => {
   const gradient = colorMap[color] || colorMap.zinc;
 
   return (
     <div
       className={`z-10 group [perspective:800px] w-min [--shadowColor:#bbb] dark:[--shadowColor:#111] ${className}`}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      tabIndex={tabIndex}
+      role={role}
+      aria-label={ariaLabel}
     >
       <div
         style={{
@@ -69,7 +102,7 @@ export const BookCover = ({
           isStatic
             ? "[transform:rotateY(-30deg)]"
             : "[transform:rotateY(0deg)] group-hover:[transform:rotateY(-30deg)]"
-        } aspect-3/4 ${radiusMap[radius]}`}
+        } aspect-3/4 ${radiusMap[radius]} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2`}
       >
         {/* Front Side */}
         <div
