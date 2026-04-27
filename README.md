@@ -22,6 +22,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Project Status](#project-status)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
@@ -51,6 +52,28 @@ Novyl AI is a full-stack web application designed to help writers create novels 
 - **Structured workflow** — Built-in support for premise, synopsis, characters, and settings
 - **Responsive design** — Fully functional on desktop, tablet, and mobile
 - **Black & white aesthetic** — Minimal, distraction-free UI using Geist Sans and Geist Mono fonts
+
+---
+
+## Project Status
+
+> ⚠️ **Attention: AI features are currently under development and not yet available.**
+
+This is an **MVP (Minimum Viable Product)** focused on the core writing platform. The following components are **fully functional and ready to use**:
+
+- ✅ **Authentication** — Register, login, password reset
+- ✅ **Novel Creation** — 7-step wizard for creating novels with premise, synopsis, genres, characters, and settings
+- ✅ **Novel Dashboard** — Grid view with search, book covers, and quick actions
+- ✅ **Novel Editor** — Chapter-based writing editor with auto-save, outlining, and chapter management
+- ✅ **Responsive UI** — Fully responsive design for desktop, tablet, and mobile
+
+**Coming Soon:**
+- 🚧 AI-assisted writing suggestions
+- 🚧 AI-powered character development
+- 🚧 AI story outline generation
+- 🚧 AI text continuation and rewriting
+
+The writing platform itself is complete and production-ready. You can create novels, write chapters, manage characters and settings, and organize your writing workflow right now.
 
 ---
 
