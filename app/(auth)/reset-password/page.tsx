@@ -109,7 +109,7 @@ function ResetPasswordForm() {
           <Button
             type="submit"
             disabled={loading || !token}
-            className="w-full"
+            className="w-full transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
           >
             {loading ? "Memuat..." : "Reset Password"}
           </Button>

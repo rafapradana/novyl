@@ -106,7 +106,7 @@ export const BookCover = ({
       >
         {/* Front Side */}
         <div
-          className={`absolute inset-y-0 overflow-hidden size-full left-0 text-white flex flex-col justify-end p-6 bg-linear-to-tr ${gradient.from} ${gradient.to} ${radiusMap[radius]}`}
+          className={`absolute inset-y-0 overflow-hidden size-full left-0 text-white flex flex-col justify-end p-6 bg-linear-to-tr ${gradient.from} ${gradient.to} ${radiusMap[radius]} outline outline-1 -outline-offset-1 outline-black/10`}
           style={{
             transform: "translateZ(25px)",
             boxShadow: "5px 5px 20px var(--shadowColor)",
@@ -139,7 +139,7 @@ export const BookCover = ({
 
         {/* Back Side */}
         <div
-          className={`absolute inset-y-0 overflow-hidden size-full left-0 text-white flex flex-col justify-end p-6 bg-linear-to-tr ${gradient.from} ${gradient.to} ${radiusMap[radius]}`}
+          className={`absolute inset-y-0 overflow-hidden size-full left-0 text-white flex flex-col justify-end p-6 bg-linear-to-tr ${gradient.from} ${gradient.to} ${radiusMap[radius]} outline outline-1 -outline-offset-1 outline-black/10`}
           style={{
             transform: "translateZ(-25px)",
             boxShadow: "-10px 0 50px 10px var(--shadowColor)",

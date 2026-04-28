@@ -127,7 +127,7 @@ export default function RegisterPage() {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
             {loading ? "Memuat..." : "Daftar"}
           </Button>
         </form>

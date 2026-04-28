@@ -37,7 +37,7 @@ export function HeaderEditor({
         {/* Left: Beranda Button */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
         >
           <Home className="h-4 w-4" />
           <span>Beranda</span>
@@ -54,7 +54,7 @@ export function HeaderEditor({
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-colors">
+              <button className="inline-flex items-center justify-center h-9 px-3 rounded-lg bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
                 <MoreVertical className="h-4 w-4" />
                 <span className="sr-only">Menu</span>
               </button>
@@ -84,7 +84,7 @@ export function HeaderEditor({
 
           <button
             onClick={onInfoClick}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-[#f8f8f8] text-black hover:bg-[#eeeeee] transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
           >
             <Info className="h-4 w-4" />
             <span>Info Novel</span>

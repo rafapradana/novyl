@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
                 <p className="mt-2 text-sm text-red-500">{error}</p>
               )}
             </div>
-            <Button type="submit" disabled={loading} className="w-full">
+            <Button type="submit" disabled={loading} className="w-full transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
               {loading ? "Memuat..." : "Kirim Link Reset"}
             </Button>
           </form>

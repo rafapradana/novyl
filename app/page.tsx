@@ -17,12 +17,13 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12, filter: "blur(4px)" },
   visible: {
     opacity: 1,
     y: 0,
+    filter: "blur(0px)",
     transition: {
-      duration: 0.6,
+      duration: 0.5,
       ease: "easeOut" as const,
     },
   },
@@ -59,7 +60,7 @@ export default function HomePage() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="rounded-full px-8 py-6 text-base font-medium bg-black text-white hover:bg-zinc-800 transition-colors"
+                  className="rounded-full px-8 py-6 text-base font-medium bg-black text-white hover:bg-zinc-800 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                 >
                   Get Started
                 </Button>
@@ -157,7 +158,7 @@ export default function HomePage() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="rounded-full px-8 py-6 text-base font-medium bg-black text-white hover:bg-zinc-800 transition-colors"
+                  className="rounded-full px-8 py-6 text-base font-medium bg-black text-white hover:bg-zinc-800 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                 >
                   Get Started
                 </Button>

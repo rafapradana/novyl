@@ -44,14 +44,18 @@ const stepVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? 60 : -60,
     opacity: 0,
+    filter: "blur(4px)",
   }),
   center: {
     x: 0,
     opacity: 1,
+    filter: "blur(0px)",
   },
   exit: (direction: number) => ({
-    x: direction < 0 ? 60 : -60,
+    x: direction < 0 ? 40 : -40,
     opacity: 0,
+    filter: "blur(2px)",
+    transition: { duration: 0.15, ease: "easeIn" as const },
   }),
 };
 
@@ -216,7 +220,7 @@ export default function CreateNovelPage() {
                   <button
                     key={genre}
                     onClick={() => toggleGenre(genre)}
-                    className={`rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-colors ${
+                    className={`rounded-full px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium transition-[background-color,color,scale] duration-150 ease-out active:scale-[0.96] ${
                       selected
                         ? "bg-black text-white"
                         : "bg-gray-100 text-black hover:bg-gray-200"
@@ -285,7 +289,7 @@ export default function CreateNovelPage() {
                   {c.name}
                   <button
                     onClick={() => removeCharacter(i)}
-                    className="rounded-full hover:bg-gray-200 p-0.5 transition-colors"
+                    className="rounded-full hover:bg-gray-200 p-0.5 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -293,7 +297,7 @@ export default function CreateNovelPage() {
               ))}
               <button
                 onClick={openCharacterDialog}
-                className="inline-flex items-center gap-1 rounded-full px-3 md:px-4 py-1.5 md:py-2 border border-black bg-white text-xs md:text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-1 rounded-full px-3 md:px-4 py-1.5 md:py-2 border border-black bg-white text-xs md:text-sm font-medium hover:bg-gray-50 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
               >
                 <Plus className="w-4 h-4" />
                 Tambah
@@ -347,7 +351,7 @@ export default function CreateNovelPage() {
                   </div>
                   <Button
                     onClick={saveCharacter}
-                    className="w-full bg-black text-white hover:bg-black/90"
+                    className="w-full bg-black text-white hover:bg-black/90 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                   >
                     Simpan
                   </Button>
@@ -372,7 +376,7 @@ export default function CreateNovelPage() {
                   {s.name}
                   <button
                     onClick={() => removeSetting(i)}
-                    className="rounded-full hover:bg-gray-200 p-0.5 transition-colors"
+                    className="rounded-full hover:bg-gray-200 p-0.5 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -380,7 +384,7 @@ export default function CreateNovelPage() {
               ))}
               <button
                 onClick={openSettingDialog}
-                className="inline-flex items-center gap-1 rounded-full px-3 md:px-4 py-1.5 md:py-2 border border-black bg-white text-xs md:text-sm font-medium hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center gap-1 rounded-full px-3 md:px-4 py-1.5 md:py-2 border border-black bg-white text-xs md:text-sm font-medium hover:bg-gray-50 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
               >
                 <Plus className="w-4 h-4" />
                 Tambah
@@ -434,7 +438,7 @@ export default function CreateNovelPage() {
                   </div>
                   <Button
                     onClick={saveSetting}
-                    className="w-full bg-black text-white hover:bg-black/90"
+                    className="w-full bg-black text-white hover:bg-black/90 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                   >
                     Simpan
                   </Button>
@@ -486,7 +490,7 @@ export default function CreateNovelPage() {
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full max-w-md bg-black text-white hover:bg-black/90 h-11 md:h-12 text-sm md:text-base font-medium"
+              className="w-full max-w-md bg-black text-white hover:bg-black/90 h-11 md:h-12 text-sm md:text-base font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -533,8 +537,8 @@ export default function CreateNovelPage() {
         <button
           onClick={prevStep}
           disabled={step === 1}
-          className={`inline-flex items-center gap-1 text-sm font-medium transition-opacity ${
-            step === 1 ? "opacity-0 pointer-events-none" : "opacity-100 hover:opacity-70"
+          className={`inline-flex items-center gap-1 text-sm font-medium transition-[opacity,scale] duration-150 ease-out ${
+            step === 1 ? "opacity-0 pointer-events-none" : "opacity-100 hover:opacity-70 active:scale-[0.96]"
           }`}
         >
           <ArrowLeft className="w-4 h-4" />
@@ -560,7 +564,7 @@ export default function CreateNovelPage() {
         {step < totalSteps ? (
           <button
             onClick={nextStep}
-            className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+            className="inline-flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-[opacity,scale] duration-150 ease-out active:scale-[0.96]"
           >
             Lanjut
             <ArrowRight className="w-4 h-4" />

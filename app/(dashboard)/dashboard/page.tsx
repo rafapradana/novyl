@@ -146,7 +146,7 @@ export default function DashboardPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full transition-transform duration-150 ease-out active:scale-[0.96]"
               onClick={() => router.push("/novel/create")}
               title="Buat Novel Baru"
             >
@@ -154,7 +154,7 @@ export default function DashboardPage() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full transition-transform duration-150 ease-out active:scale-[0.96]">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full h-9 w-9"
+              className="rounded-full h-9 w-9 transition-transform duration-150 ease-out active:scale-[0.96]"
               title="Menu"
             >
               <MoreVertical className="h-5 w-5" />
@@ -216,7 +216,7 @@ export default function DashboardPage() {
             {search && (
               <button
                 onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                 aria-label="Hapus pencarian"
               >
                 <X className="h-3 w-3" />
@@ -225,7 +225,7 @@ export default function DashboardPage() {
           </div>
           <Button
             onClick={() => router.push("/novel/create")}
-            className="rounded-full bg-black text-white hover:bg-black/90 px-3 md:px-5 shrink-0"
+            className="rounded-full bg-black text-white hover:bg-black/90 px-3 md:px-5 shrink-0 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
             aria-label="Buat Novel Baru"
           >
             <Plus className="h-4 w-4" />
@@ -267,7 +267,7 @@ export default function DashboardPage() {
           </div>
           <Button
             onClick={() => router.push("/novel/create")}
-            className="rounded-full bg-black text-white hover:bg-black/90 px-6 h-11"
+            className="rounded-full bg-black text-white hover:bg-black/90 px-6 h-11 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
           >
             <Sparkles className="h-4 w-4 mr-2" />
             Buat Novel Baru
@@ -293,7 +293,7 @@ export default function DashboardPage() {
                 }
               }}
             >
-              <div className="transition-transform active:scale-[0.97]">
+              <div className="transition-transform duration-150 ease-out active:scale-[0.96]">
                 <BookCover
                   color="neutral"
                   size="sm"
@@ -311,7 +311,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-muted-foreground">
                   Terakhir Diedit
                 </p>
-                <p className="font-medium text-sm">
+                <p className="font-medium text-sm tabular-nums">
                   {novel.updatedAt
                     ? formatRelativeTime(novel.updatedAt)
                     : "—"}

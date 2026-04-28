@@ -342,7 +342,7 @@ export default function NovelEditPage() {
 
         {/* Save status */}
         <div className="absolute bottom-4 right-6 flex items-center gap-3 text-xs text-muted-foreground pointer-events-none select-none z-10">
-          <span>{wordCount} kata</span>
+          <span className="tabular-nums">{wordCount} kata</span>
           {saveStatus === "saving" && <span>Menyimpan...</span>}
           {saveStatus === "saved" && <span>Tersimpan</span>}
           {saveStatus === "error" && (
@@ -354,7 +354,7 @@ export default function NovelEditPage() {
         {prevChapter && (
           <button
             onClick={() => handleNavigate(prevChapter.id)}
-            className="fixed left-6 md:left-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-colors shadow-sm z-10"
+            className="fixed left-6 md:left-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             <ChevronLeft className="h-4 w-4" />
             Bab {prevChapter.order}
@@ -364,7 +364,7 @@ export default function NovelEditPage() {
         {nextChapter ? (
           <button
             onClick={() => handleNavigate(nextChapter.id)}
-            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-colors shadow-sm z-10"
+            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             Bab {nextChapter.order}
             <ChevronRight className="h-4 w-4" />
@@ -372,7 +372,7 @@ export default function NovelEditPage() {
         ) : (
           <button
             onClick={() => setNewChapterOpen(true)}
-            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-colors shadow-sm z-10"
+            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             + Tambah Bab
             <ChevronRight className="h-4 w-4" />
@@ -442,7 +442,7 @@ export default function NovelEditPage() {
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-1">Total Kata</h4>
-              <p className="text-sm text-muted-foreground">{totalWordCount} kata</p>
+              <p className="text-sm text-muted-foreground tabular-nums">{totalWordCount} kata</p>
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
@@ -450,6 +450,7 @@ export default function NovelEditPage() {
               variant="destructive"
               size="sm"
               onClick={() => setDeleteNovelOpen(true)}
+              className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
             >
               Hapus Novel
             </Button>
@@ -483,7 +484,7 @@ export default function NovelEditPage() {
             <Button variant="outline" size="sm" onClick={() => setNewChapterOpen(false)}>
               Batal
             </Button>
-            <Button size="sm" onClick={handleCreateChapter} disabled={!newChapterTitle.trim()}>
+            <Button size="sm" onClick={handleCreateChapter} disabled={!newChapterTitle.trim()} className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
               Buat
             </Button>
           </DialogFooter>
@@ -514,6 +515,7 @@ export default function NovelEditPage() {
               size="sm"
               onClick={handleRenameChapter}
               disabled={!renameChapterTitle.trim()}
+              className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
             >
               Simpan
             </Button>
@@ -538,7 +540,7 @@ export default function NovelEditPage() {
             <Button variant="outline" size="sm" onClick={() => setDeleteChapterOpen(false)}>
               Batal
             </Button>
-            <Button variant="destructive" size="sm" onClick={handleDeleteChapter}>
+            <Button variant="destructive" size="sm" onClick={handleDeleteChapter} className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
               Hapus
             </Button>
           </DialogFooter>
@@ -559,7 +561,7 @@ export default function NovelEditPage() {
             <Button variant="outline" size="sm" onClick={() => setDeleteNovelOpen(false)}>
               Batal
             </Button>
-            <Button variant="destructive" size="sm" onClick={handleDeleteNovel}>
+            <Button variant="destructive" size="sm" onClick={handleDeleteNovel} className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]">
               Hapus
             </Button>
           </DialogFooter>
