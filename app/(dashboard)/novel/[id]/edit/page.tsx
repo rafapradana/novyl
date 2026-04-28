@@ -2,11 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  Trash2,
-  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,6 +21,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+
 
 import { HeaderEditor } from "@/components/header-editor";
 import { ProgressiveBlur } from "@/components/progressive-blur";
@@ -48,10 +48,12 @@ export default function NovelEditPage() {
   const [infoOpen, setInfoOpen] = useState(false);
   const [newChapterOpen, setNewChapterOpen] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState("");
+  const [newChapterOutline, setNewChapterOutline] = useState("");
   const [deleteChapterOpen, setDeleteChapterOpen] = useState(false);
   const [deleteNovelOpen, setDeleteNovelOpen] = useState(false);
   const [renameChapterOpen, setRenameChapterOpen] = useState(false);
   const [renameChapterTitle, setRenameChapterTitle] = useState("");
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
 
   const contentRef = useRef(content);
   const activeChapterIdRef = useRef(activeChapterId);
@@ -161,23 +163,43 @@ export default function NovelEditPage() {
       ? (novel?.chapters[activeIndex + 1] ?? null)
       : null;
 
-  const handleNavigate = async (chapterId: string) => {
-    await flushSave();
-    const ch = novel?.chapters.find((c) => c.id === chapterId);
-    if (ch) {
-      setActiveChapterId(ch.id);
-      setContent(ch.content ?? "");
-      contentRef.current = ch.content ?? "";
-      isDirtyRef.current = false;
-      setSaveStatus("idle");
-    }
-  };
+  const handleNavigate = useCallback(
+    async (chapterId: string) => {
+      await flushSave();
+      const ch = novel?.chapters.find((c) => c.id === chapterId);
+      if (ch) {
+        setActiveChapterId(ch.id);
+        setContent(ch.content ?? "");
+        contentRef.current = ch.content ?? "";
+        isDirtyRef.current = false;
+        setSaveStatus("idle");
+      }
+    },
+    [novel, flushSave]
+  );
+
+  const handleSwipeNavigate = useCallback(
+    async (direction: "left" | "right") => {
+      if (direction === "left" && nextChapter) {
+        setSwipeDirection("left");
+        await handleNavigate(nextChapter.id);
+      } else if (direction === "right" && prevChapter) {
+        setSwipeDirection("right");
+        await handleNavigate(prevChapter.id);
+      }
+      setTimeout(() => setSwipeDirection(null), 300);
+    },
+    [nextChapter, prevChapter, handleNavigate]
+  );
 
   const handleCreateChapter = async () => {
     if (!novel || !newChapterTitle.trim()) return;
     await flushSave();
     try {
-      const newCh = await createChapter(novel.id, { title: newChapterTitle.trim() });
+      const newCh = await createChapter(novel.id, {
+        title: newChapterTitle.trim(),
+        outline: newChapterOutline.trim() || undefined,
+      });
       setNovel((prev) => {
         if (!prev) return prev;
         return { ...prev, chapters: [...prev.chapters, newCh] };
@@ -188,6 +210,7 @@ export default function NovelEditPage() {
       isDirtyRef.current = false;
       setSaveStatus("idle");
       setNewChapterTitle("");
+      setNewChapterOutline("");
       setNewChapterOpen(false);
       toast.success("Bab baru dibuat");
     } catch (err) {
@@ -309,10 +332,23 @@ export default function NovelEditPage() {
         }}
         onDeleteClick={() => setDeleteChapterOpen(true)}
         onInfoClick={() => setInfoOpen(true)}
+        onDeleteNovelClick={() => setDeleteNovelOpen(true)}
       />
 
       {/* Main Editor Area */}
-      <div className="flex-1 relative">
+      <motion.div
+        className="flex-1 relative md:touch-auto"
+        style={{ touchAction: "pan-y" }}
+        onPanEnd={(_, info) => {
+          if (window.innerWidth >= 768) return;
+          const threshold = 80;
+          if (info.offset.x < -threshold && nextChapter) {
+            handleSwipeNavigate("left");
+          } else if (info.offset.x > threshold && prevChapter) {
+            handleSwipeNavigate("right");
+          }
+        }}
+      >
         <ProgressiveBlur
           position="top"
           backgroundColor="#ffffff"
@@ -321,16 +357,35 @@ export default function NovelEditPage() {
           className="z-30"
         />
 
-        <textarea
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
-          placeholder="Mulai menulis bab ini..."
-          className="w-full h-full resize-none border-0 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none text-lg leading-loose bg-white px-8 pt-20 pb-4 scrollbar-hidden"
-          style={{
-            fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
-            boxShadow: "none",
-          }}
-        />
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={activeChapterId ?? "empty"}
+            className="w-full h-full"
+            initial={
+              swipeDirection
+                ? { opacity: 0, x: swipeDirection === "left" ? 60 : -60 }
+                : { opacity: 1, x: 0 }
+            }
+            animate={{ opacity: 1, x: 0 }}
+            exit={
+              swipeDirection
+                ? { opacity: 0, x: swipeDirection === "left" ? -60 : 60 }
+                : { opacity: 1, x: 0 }
+            }
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            <textarea
+              value={content}
+              onChange={(e) => handleContentChange(e.target.value)}
+              placeholder="Mulai menulis bab ini..."
+              className="w-full h-full resize-none border-0 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none text-base md:text-lg leading-loose bg-white px-4 sm:px-6 md:px-8 pt-20 pb-20 md:pb-4 scrollbar-hidden"
+              style={{
+                fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
+                boxShadow: "none",
+              }}
+            />
+          </motion.div>
+        </AnimatePresence>
 
         <ProgressiveBlur
           position="bottom"
@@ -340,8 +395,8 @@ export default function NovelEditPage() {
           className="z-30"
         />
 
-        {/* Save status */}
-        <div className="absolute bottom-4 right-6 flex items-center gap-3 text-xs text-muted-foreground pointer-events-none select-none z-10">
+        {/* Save status — top-right on mobile, bottom-right on desktop */}
+        <div className="absolute top-4 right-4 md:top-auto md:bottom-4 md:right-6 flex items-center gap-3 text-xs text-muted-foreground pointer-events-none select-none z-10">
           <span className="tabular-nums">{wordCount} kata</span>
           {saveStatus === "saving" && <span>Menyimpan...</span>}
           {saveStatus === "saved" && <span>Tersimpan</span>}
@@ -350,11 +405,11 @@ export default function NovelEditPage() {
           )}
         </div>
 
-        {/* Floating Chapter Navigation Pills */}
+        {/* Desktop: Floating Chapter Navigation Pills (side) */}
         {prevChapter && (
           <button
             onClick={() => handleNavigate(prevChapter.id)}
-            className="fixed left-6 md:left-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
+            className="hidden md:flex fixed left-6 lg:left-10 top-1/2 -translate-y-1/2 items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             <ChevronLeft className="h-4 w-4" />
             Bab {prevChapter.order}
@@ -364,7 +419,7 @@ export default function NovelEditPage() {
         {nextChapter ? (
           <button
             onClick={() => handleNavigate(nextChapter.id)}
-            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
+            className="hidden md:flex fixed right-6 lg:right-10 top-1/2 -translate-y-1/2 items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             Bab {nextChapter.order}
             <ChevronRight className="h-4 w-4" />
@@ -372,17 +427,56 @@ export default function NovelEditPage() {
         ) : (
           <button
             onClick={() => setNewChapterOpen(true)}
-            className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
+            className="hidden md:flex fixed right-6 lg:right-10 top-1/2 -translate-y-1/2 items-center gap-1 px-4 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shadow-sm z-10"
           >
             + Tambah Bab
             <ChevronRight className="h-4 w-4" />
           </button>
         )}
-      </div>
+
+        {/* Mobile: Bottom Navigation Bar */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-t border-gray-100 px-4 py-3 flex items-center justify-between safe-area-pb"
+          style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
+          <button
+            onClick={() => prevChapter && handleNavigate(prevChapter.id)}
+            disabled={!prevChapter}
+            className={`inline-flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] ${
+              prevChapter
+                ? "bg-[#f8f8f8] hover:bg-[#eeeeee] text-black"
+                : "bg-gray-50 text-gray-300 cursor-not-allowed"
+            }`}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {prevChapter ? `Bab ${prevChapter.order}` : "Awal"}
+          </button>
+
+          <span className="text-xs text-muted-foreground font-medium px-1">
+            Bab {activeChapter.order}
+          </span>
+
+          {nextChapter ? (
+            <button
+              onClick={() => handleNavigate(nextChapter.id)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-[#f8f8f8] hover:bg-[#eeeeee] text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+            >
+              {`Bab ${nextChapter.order}`}
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => setNewChapterOpen(true)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-full bg-black text-white text-sm font-medium transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+            >
+              + Baru
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </motion.div>
 
       {/* Info Novel Dialog */}
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-[92vw] sm:max-w-2xl max-h-[85dvh] overflow-y-auto duration-300">
           <DialogHeader>
             <DialogTitle>{novel.title}</DialogTitle>
             <DialogDescription>Detail novel dan metadata.</DialogDescription>
@@ -441,6 +535,23 @@ export default function NovelEditPage() {
               )}
             </div>
             <div>
+              <h4 className="text-sm font-semibold mb-1">Bab</h4>
+              {novel.chapters.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Belum ada bab.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {novel.chapters.map((ch) => (
+                    <li key={ch.id} className="text-sm">
+                      <span className="font-medium">Bab {ch.order}: {ch.title}</span>
+                      {ch.outline && (
+                        <p className="text-muted-foreground mt-0.5 whitespace-pre-wrap">{ch.outline}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
               <h4 className="text-sm font-semibold mb-1">Total Kata</h4>
               <p className="text-sm text-muted-foreground tabular-nums">{totalWordCount} kata</p>
             </div>
@@ -465,12 +576,12 @@ export default function NovelEditPage() {
 
       {/* New Chapter Dialog */}
       <Dialog open={newChapterOpen} onOpenChange={setNewChapterOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Bab Baru</DialogTitle>
-            <DialogDescription>Masukkan judul untuk bab baru.</DialogDescription>
+            <DialogDescription>Masukkan judul dan outline untuk bab baru.</DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 space-y-4">
             <Input
               value={newChapterTitle}
               onChange={(e) => setNewChapterTitle(e.target.value)}
@@ -478,6 +589,12 @@ export default function NovelEditPage() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleCreateChapter();
               }}
+            />
+            <textarea
+              value={newChapterOutline}
+              onChange={(e) => setNewChapterOutline(e.target.value)}
+              placeholder="Outline bab (opsional)..."
+              className="w-full resize-none border-0 border-b-2 border-gray-200 bg-transparent px-0 text-sm min-h-[80px] outline-none focus:border-black transition-colors"
             />
           </div>
           <DialogFooter>
@@ -493,7 +610,7 @@ export default function NovelEditPage() {
 
       {/* Rename Chapter Dialog */}
       <Dialog open={renameChapterOpen} onOpenChange={setRenameChapterOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Ubah Nama Bab</DialogTitle>
           </DialogHeader>
@@ -525,7 +642,7 @@ export default function NovelEditPage() {
 
       {/* Delete Chapter Dialog */}
       <Dialog open={deleteChapterOpen} onOpenChange={setDeleteChapterOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Hapus Bab</DialogTitle>
             <DialogDescription>
@@ -549,7 +666,7 @@ export default function NovelEditPage() {
 
       {/* Delete Novel Dialog */}
       <Dialog open={deleteNovelOpen} onOpenChange={setDeleteNovelOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Hapus Novel</DialogTitle>
             <DialogDescription>
@@ -567,6 +684,7 @@ export default function NovelEditPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }

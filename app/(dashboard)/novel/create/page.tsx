@@ -40,6 +40,11 @@ interface SettingItem {
   description: string;
 }
 
+interface ChapterItem {
+  title: string;
+  outline: string;
+}
+
 const stepVariants = {
   enter: (direction: number) => ({
     x: direction > 0 ? 60 : -60,
@@ -69,17 +74,21 @@ export default function CreateNovelPage() {
   const [synopsis, setSynopsis] = useState("");
   const [characters, setCharacters] = useState<CharacterItem[]>([]);
   const [settings, setSettings] = useState<SettingItem[]>([]);
+  const [chapters, setChapters] = useState<ChapterItem[]>([]);
 
   const [characterDialogOpen, setCharacterDialogOpen] = useState(false);
   const [settingDialogOpen, setSettingDialogOpen] = useState(false);
+  const [chapterDialogOpen, setChapterDialogOpen] = useState(false);
   const [characterName, setCharacterName] = useState("");
   const [characterDescription, setCharacterDescription] = useState("");
   const [settingName, setSettingName] = useState("");
   const [settingDescription, setSettingDescription] = useState("");
+  const [chapterTitle, setChapterTitle] = useState("");
+  const [chapterOutline, setChapterOutline] = useState("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   const toggleGenre = (genre: string) => {
     setGenres((prev) =>
@@ -97,6 +106,8 @@ export default function CreateNovelPage() {
         return premise.trim().length > 0;
       case 4:
         return synopsis.trim().length > 0;
+      case 7:
+        return chapters.length > 0;
       default:
         return true;
     }
@@ -164,6 +175,28 @@ export default function CreateNovelPage() {
     setSettings((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const openChapterDialog = () => {
+    setChapterTitle("");
+    setChapterOutline("");
+    setChapterDialogOpen(true);
+  };
+
+  const saveChapter = useCallback(() => {
+    if (!chapterTitle.trim()) {
+      toast.error("Judul bab tidak boleh kosong");
+      return;
+    }
+    setChapters((prev) => [
+      ...prev,
+      { title: chapterTitle.trim(), outline: chapterOutline.trim() },
+    ]);
+    setChapterDialogOpen(false);
+  }, [chapterTitle, chapterOutline]);
+
+  const removeChapter = (index: number) => {
+    setChapters((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
     if (!canProceed()) {
       toast.error("Lengkapi data terlebih dahulu");
@@ -178,6 +211,10 @@ export default function CreateNovelPage() {
         genres,
         characters: characters.length > 0 ? characters : undefined,
         settings: settings.length > 0 ? settings : undefined,
+        chapters: chapters.map((ch) => ({
+          title: ch.title,
+          outline: ch.outline || undefined,
+        })),
       });
     } catch (error) {
       const message =
@@ -449,6 +486,96 @@ export default function CreateNovelPage() {
         );
       case 7:
         return (
+          <div className="flex flex-col items-center w-full max-w-xl mx-auto px-4">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-8">
+              Tambah Bab
+            </h2>
+            <p className="text-xs text-gray-400 mb-4">Minimal 1 bab wajib ditambahkan</p>
+            <div className="w-full max-w-lg space-y-3 mb-6">
+              {chapters.map((ch, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{ch.title}</p>
+                    {ch.outline && (
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{ch.outline}</p>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => removeChapter(i)}
+                    className="rounded-full hover:bg-gray-200 p-1 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96] shrink-0"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+              <button
+                onClick={openChapterDialog}
+                className="w-full inline-flex items-center justify-center gap-1 rounded-full px-4 py-2 border border-black bg-white text-sm font-medium hover:bg-gray-50 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+              >
+                <Plus className="w-4 h-4" />
+                Tambah Bab
+              </button>
+            </div>
+
+            <Dialog
+              open={chapterDialogOpen}
+              onOpenChange={setChapterDialogOpen}
+            >
+              <DialogContent className="sm:rounded-lg p-5 md:p-6 max-w-[90vw] md:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-base md:text-lg font-semibold">
+                    Tambah Bab
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Judul Bab
+                    </label>
+                    <Input
+                      value={chapterTitle}
+                      onChange={(e) => setChapterTitle(e.target.value)}
+                      placeholder="Judul bab..."
+                      className="border-0 border-b-2 border-gray-200 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-black transition-colors"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveChapter();
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Outline Bab
+                    </label>
+                    <Textarea
+                      value={chapterOutline}
+                      onChange={(e) => setChapterOutline(e.target.value)}
+                      placeholder="Outline atau garis besar bab..."
+                      className="border-0 border-b-2 border-gray-200 rounded-none bg-transparent px-0 min-h-[80px] resize-none focus-visible:ring-0 focus-visible:border-black transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          saveChapter();
+                        }
+                      }}
+                    />
+                  </div>
+                  <Button
+                    onClick={saveChapter}
+                    className="w-full bg-black text-white hover:bg-black/90 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+                  >
+                    Simpan
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        );
+      case 8:
+        return (
           <div className="flex flex-col items-center w-full max-w-lg mx-auto px-4">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 md:mb-8">
               Siap Dibuat?
@@ -472,6 +599,10 @@ export default function CreateNovelPage() {
                     settings.length > 0
                       ? settings.map((s) => s.name).join(", ")
                       : "-",
+                },
+                {
+                  label: "Bab",
+                  value: chapters.map((ch) => ch.title).join(", ") || "-",
                 },
               ].map(({ label, value }) => (
                 <div

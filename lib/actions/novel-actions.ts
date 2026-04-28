@@ -53,11 +53,22 @@ export async function createNovel(data: CreateNovelInput) {
         );
       }
 
-      await tx.insert(chapters).values({
-        novelId: novel.id,
-        title: "Bab 1",
-        order: 1,
-      });
+      if (data.chapters && data.chapters.length > 0) {
+        await tx.insert(chapters).values(
+          data.chapters.map((ch, i) => ({
+            novelId: novel.id,
+            title: ch.title,
+            outline: ch.outline ?? null,
+            order: i + 1,
+          }))
+        );
+      } else {
+        await tx.insert(chapters).values({
+          novelId: novel.id,
+          title: "Bab 1",
+          order: 1,
+        });
+      }
 
       return novel;
     });

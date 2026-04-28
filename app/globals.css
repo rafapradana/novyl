@@ -91,6 +91,11 @@ p, li, figcaption, blockquote, label, span {
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
+/* Safe area padding for mobile bottom bars */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* Hide scrollbar for textarea and scrollable elements */
 .scrollbar-hidden {
   scrollbar-width: none;

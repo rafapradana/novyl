@@ -1,6 +1,7 @@
 import type { Novel as NovelSchema, Character, Setting, Chapter } from "@/db/schema";
 import type { CreateCharacterInput } from "@/types/character";
 import type { CreateSettingInput } from "@/types/setting";
+import type { CreateChapterInput } from "@/types/chapter";
 
 export type Novel = NovelSchema;
 
@@ -11,6 +12,7 @@ export interface CreateNovelInput {
   genres: string[];
   characters?: CreateCharacterInput[];
   settings?: CreateSettingInput[];
+  chapters: CreateChapterInput[];
 }
 
 export interface UpdateNovelInput {
