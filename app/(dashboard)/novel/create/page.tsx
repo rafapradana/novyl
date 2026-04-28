@@ -43,6 +43,8 @@ interface SettingItem {
 interface ChapterItem {
   title: string;
   outline: string;
+  targetWordCountMin: number;
+  targetWordCountMax: number;
 }
 
 const stepVariants = {
@@ -85,6 +87,8 @@ export default function CreateNovelPage() {
   const [settingDescription, setSettingDescription] = useState("");
   const [chapterTitle, setChapterTitle] = useState("");
   const [chapterOutline, setChapterOutline] = useState("");
+  const [chapterWordCountMin, setChapterWordCountMin] = useState(2000);
+  const [chapterWordCountMax, setChapterWordCountMax] = useState(3500);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -178,6 +182,8 @@ export default function CreateNovelPage() {
   const openChapterDialog = () => {
     setChapterTitle("");
     setChapterOutline("");
+    setChapterWordCountMin(2000);
+    setChapterWordCountMax(3500);
     setChapterDialogOpen(true);
   };
 
@@ -186,12 +192,21 @@ export default function CreateNovelPage() {
       toast.error("Judul bab tidak boleh kosong");
       return;
     }
+    if (chapterWordCountMin > chapterWordCountMax) {
+      toast.error("Jumlah kata minimum tidak boleh lebih besar dari maksimum");
+      return;
+    }
     setChapters((prev) => [
       ...prev,
-      { title: chapterTitle.trim(), outline: chapterOutline.trim() },
+      {
+        title: chapterTitle.trim(),
+        outline: chapterOutline.trim(),
+        targetWordCountMin: chapterWordCountMin,
+        targetWordCountMax: chapterWordCountMax,
+      },
     ]);
     setChapterDialogOpen(false);
-  }, [chapterTitle, chapterOutline]);
+  }, [chapterTitle, chapterOutline, chapterWordCountMin, chapterWordCountMax]);
 
   const removeChapter = (index: number) => {
     setChapters((prev) => prev.filter((_, i) => i !== index));
@@ -214,6 +229,8 @@ export default function CreateNovelPage() {
         chapters: chapters.map((ch) => ({
           title: ch.title,
           outline: ch.outline || undefined,
+          targetWordCountMin: ch.targetWordCountMin,
+          targetWordCountMax: ch.targetWordCountMax,
         })),
       });
     } catch (error) {
@@ -502,6 +519,9 @@ export default function CreateNovelPage() {
                     {ch.outline && (
                       <p className="text-xs text-gray-500 mt-1 line-clamp-2">{ch.outline}</p>
                     )}
+                    <p className="text-xs text-gray-400 mt-1">
+                      {ch.targetWordCountMin.toLocaleString("id-ID")} - {ch.targetWordCountMax.toLocaleString("id-ID")} kata
+                    </p>
                   </div>
                   <button
                     onClick={() => removeChapter(i)}
@@ -562,6 +582,49 @@ export default function CreateNovelPage() {
                         }
                       }}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      Jumlah Kata Target
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">
+                          Min
+                        </label>
+                        <Input
+                          type="number"
+                          value={chapterWordCountMin}
+                          onChange={(e) =>
+                            setChapterWordCountMin(
+                              Math.max(0, parseInt(e.target.value) || 0)
+                            )
+                          }
+                          min={0}
+                          className="border-0 border-b-2 border-gray-200 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-black transition-colors"
+                        />
+                      </div>
+                      <span className="text-gray-400 mt-5">-</span>
+                      <div className="flex-1">
+                        <label className="block text-xs text-gray-500 mb-1">
+                          Max
+                        </label>
+                        <Input
+                          type="number"
+                          value={chapterWordCountMax}
+                          onChange={(e) =>
+                            setChapterWordCountMax(
+                              Math.max(0, parseInt(e.target.value) || 0)
+                            )
+                          }
+                          min={0}
+                          className="border-0 border-b-2 border-gray-200 rounded-none bg-transparent px-0 focus-visible:ring-0 focus-visible:border-black transition-colors"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">
+                      Default: 2.000 - 3.500 kata
+                    </p>
                   </div>
                   <Button
                     onClick={saveChapter}

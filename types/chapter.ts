@@ -5,4 +5,6 @@ export type Chapter = ChapterSchema;
 export interface CreateChapterInput {
   title: string;
   outline?: string;
+  targetWordCountMin?: number;
+  targetWordCountMax?: number;
 }

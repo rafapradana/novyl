@@ -5,6 +5,8 @@ import type { CreateChapterInput } from "@/types/chapter";
 
 export type Novel = NovelSchema;
 
+export type GenerationStatus = "idle" | "generating" | "completed" | "failed";
+
 export interface CreateNovelInput {
   title: string;
   premise: string;
@@ -20,6 +22,9 @@ export interface UpdateNovelInput {
   premise?: string;
   synopsis?: string;
   genres?: string[];
+  blurb?: string;
+  generationStatus?: GenerationStatus;
+  workflowRunId?: string;
 }
 
 export interface NovelWithMeta extends Novel {

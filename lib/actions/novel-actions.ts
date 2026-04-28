@@ -60,6 +60,8 @@ export async function createNovel(data: CreateNovelInput) {
             title: ch.title,
             outline: ch.outline ?? null,
             order: i + 1,
+            targetWordCountMin: ch.targetWordCountMin ?? 2000,
+            targetWordCountMax: ch.targetWordCountMax ?? 3500,
           }))
         );
       } else {
@@ -67,6 +69,8 @@ export async function createNovel(data: CreateNovelInput) {
           novelId: novel.id,
           title: "Bab 1",
           order: 1,
+          targetWordCountMin: 2000,
+          targetWordCountMax: 3500,
         });
       }
 

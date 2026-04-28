@@ -102,12 +102,18 @@ export const novels = pgTable(
       .notNull()
       .default(sql`ARRAY[]::text[]`),
     totalWordCount: integer("total_word_count").default(0),
+    blurb: text("blurb"),
+    generationStatus: text("generation_status").default("idle"),
+    workflowRunId: text("workflow_run_id"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (table) => [index("novel_user_id_idx").on(table.userId)]
+  (table) => [
+    index("novel_user_id_idx").on(table.userId),
+    index("novel_generation_status_idx").on(table.generationStatus),
+  ]
 );
 
 export const characters = pgTable(
@@ -150,6 +156,8 @@ export const chapters = pgTable(
     content: text("content").default(""),
     order: integer("order").notNull(),
     wordCount: integer("word_count").default(0),
+    targetWordCountMin: integer("target_word_count_min").default(2000),
+    targetWordCountMax: integer("target_word_count_max").default(3500),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
