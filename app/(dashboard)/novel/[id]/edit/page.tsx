@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,6 +26,7 @@ import {
 
 import { HeaderEditor } from "@/components/header-editor";
 import { ProgressiveBlur } from "@/components/progressive-blur";
+import { GenerationBanner } from "@/components/generation-banner";
 import { getNovelById, deleteNovel } from "@/lib/actions/novel-actions";
 import {
   updateChapter,
@@ -32,7 +34,7 @@ import {
   deleteChapter,
   renameChapter,
 } from "@/lib/actions/chapter-actions";
-import type { NovelDetail } from "@/types/novel";
+import type { NovelDetail, GenerationStatus } from "@/types/novel";
 import type { Chapter } from "@/types/chapter";
 
 export default function NovelEditPage() {
@@ -54,6 +56,7 @@ export default function NovelEditPage() {
   const [renameChapterOpen, setRenameChapterOpen] = useState(false);
   const [renameChapterTitle, setRenameChapterTitle] = useState("");
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
+  const [generationStatus, setGenerationStatus] = useState<GenerationStatus>("idle");
 
   const contentRef = useRef(content);
   const activeChapterIdRef = useRef(activeChapterId);
@@ -78,6 +81,7 @@ export default function NovelEditPage() {
         if (cancelled) return;
 
         setNovel(data);
+        setGenerationStatus(data.generationStatus ?? "idle");
         const firstChapter = data.chapters[0] ?? null;
         const initialContent = firstChapter?.content ?? "";
 
@@ -99,6 +103,42 @@ export default function NovelEditPage() {
     return () => {
       cancelled = true;
     };
+  }, [novelId]);
+
+  const handleContentUpdate = useCallback(
+    (chapterOrder: number, delta: string) => {
+      if (!novel) return;
+
+      const targetChapter = novel.chapters.find((c) => c.order === chapterOrder);
+      if (!targetChapter) return;
+
+      if (targetChapter.id === activeChapterId) {
+        setContent((prev) => prev + delta);
+      }
+
+      setNovel((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          chapters: prev.chapters.map((ch) =>
+            ch.order === chapterOrder
+              ? { ...ch, content: (ch.content ?? "") + delta }
+              : ch
+          ),
+        };
+      });
+    },
+    [novel, activeChapterId]
+  );
+
+  const handleGenerationComplete = useCallback(async () => {
+    try {
+      const data = await getNovelById(novelId);
+      setNovel(data);
+      toast.success("Novel selesai di-generate!");
+    } catch {
+      toast.error("Gagal memuat novel setelah generate");
+    }
   }, [novelId]);
 
   useEffect(() => {
@@ -335,6 +375,15 @@ export default function NovelEditPage() {
         onDeleteNovelClick={() => setDeleteNovelOpen(true)}
       />
 
+      {/* Generation Banner */}
+      <GenerationBanner
+        novelId={novelId}
+        generationStatus={generationStatus}
+        onStatusChange={setGenerationStatus}
+        onContentUpdate={handleContentUpdate}
+        onGenerationComplete={handleGenerationComplete}
+      />
+
       {/* Main Editor Area */}
       <motion.div
         className="flex-1 relative md:touch-auto"
@@ -554,6 +603,34 @@ export default function NovelEditPage() {
             <div>
               <h4 className="text-sm font-semibold mb-1">Total Kata</h4>
               <p className="text-sm text-muted-foreground tabular-nums">{totalWordCount} kata</p>
+            </div>
+            {novel.blurb && (
+              <div>
+                <h4 className="text-sm font-semibold mb-1">Blurb</h4>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {novel.blurb}
+                </p>
+              </div>
+            )}
+            <div>
+              <h4 className="text-sm font-semibold mb-1">Status Generasi</h4>
+              <div className="flex items-center gap-2">
+                {generationStatus === "idle" && (
+                  <Badge variant="secondary">Idle</Badge>
+                )}
+                {generationStatus === "generating" && (
+                  <Badge className="bg-blue-100 text-blue-800">
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Generating
+                  </Badge>
+                )}
+                {generationStatus === "completed" && (
+                  <Badge className="bg-green-100 text-green-800">Selesai</Badge>
+                )}
+                {generationStatus === "failed" && (
+                  <Badge variant="destructive">Gagal</Badge>
+                )}
+              </div>
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">

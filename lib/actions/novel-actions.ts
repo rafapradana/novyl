@@ -4,9 +4,11 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { eq, count, desc } from "drizzle-orm";
+import { start } from "workflow/api";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels, characters, settings, chapters } from "@/db/schema";
+import { generateNovelWorkflow } from "@/workflows/generate-novel";
 import type { CreateNovelInput, UpdateNovelInput } from "@/types/novel";
 import type { CreateCharacterInput } from "@/types/character";
 import type { CreateSettingInput } from "@/types/setting";
@@ -82,6 +84,26 @@ export async function createNovel(data: CreateNovelInput) {
     throw new Error(
       `Failed to create novel: ${error instanceof Error ? error.message : String(error)}`
     );
+  }
+
+  try {
+    await db
+      .update(novels)
+      .set({ generationStatus: "generating" })
+      .where(eq(novels.id, novelId));
+
+    const run = await start(generateNovelWorkflow, [novelId]);
+
+    await db
+      .update(novels)
+      .set({ workflowRunId: run.runId })
+      .where(eq(novels.id, novelId));
+  } catch (error) {
+    console.error("Failed to start generation workflow:", error);
+    await db
+      .update(novels)
+      .set({ generationStatus: "failed" })
+      .where(eq(novels.id, novelId));
   }
 
   revalidatePath("/novels");

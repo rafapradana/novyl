@@ -11,6 +11,9 @@ import {
   X,
   MoreVertical,
   Sparkles,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getNovelsByUser } from "@/lib/actions/novel-actions";
@@ -22,6 +25,7 @@ import {
 } from "@/components/book-cover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -306,6 +310,28 @@ export default function DashboardPage() {
                     </BookDescription>
                   )}
                 </BookCover>
+                {novel.generationStatus && novel.generationStatus !== "idle" && (
+                  <div className="mt-2 flex justify-center">
+                    {novel.generationStatus === "generating" && (
+                      <Badge className="bg-blue-100 text-blue-800 text-xs">
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        Generating
+                      </Badge>
+                    )}
+                    {novel.generationStatus === "completed" && (
+                      <Badge className="bg-green-100 text-green-800 text-xs">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Selesai
+                      </Badge>
+                    )}
+                    {novel.generationStatus === "failed" && (
+                      <Badge variant="destructive" className="text-xs">
+                        <AlertCircle className="h-3 w-3 mr-1" />
+                        Gagal
+                      </Badge>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="mt-2 md:mt-3 text-center space-y-0.5">
                 <p className="text-xs text-muted-foreground">
