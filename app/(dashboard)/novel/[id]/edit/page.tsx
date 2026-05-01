@@ -81,7 +81,7 @@ export default function NovelEditPage() {
         if (cancelled) return;
 
         setNovel(data);
-        setGenerationStatus(data.generationStatus ?? "idle");
+        setGenerationStatus((data.generationStatus as GenerationStatus) ?? "idle");
         const firstChapter = data.chapters[0] ?? null;
         const initialContent = firstChapter?.content ?? "";
 
@@ -105,41 +105,68 @@ export default function NovelEditPage() {
     };
   }, [novelId]);
 
-  const handleContentUpdate = useCallback(
-    (chapterOrder: number, delta: string) => {
-      if (!novel) return;
-
-      const targetChapter = novel.chapters.find((c) => c.order === chapterOrder);
-      if (!targetChapter) return;
-
-      if (targetChapter.id === activeChapterId) {
-        setContent((prev) => prev + delta);
-      }
-
-      setNovel((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          chapters: prev.chapters.map((ch) =>
-            ch.order === chapterOrder
-              ? { ...ch, content: (ch.content ?? "") + delta }
-              : ch
-          ),
-        };
-      });
-    },
-    [novel, activeChapterId]
-  );
-
   const handleGenerationComplete = useCallback(async () => {
     try {
       const data = await getNovelById(novelId);
       setNovel(data);
+      const firstChapter = data.chapters[0] ?? null;
+      if (firstChapter) {
+        setActiveChapterId(firstChapter.id);
+        setContent(firstChapter.content ?? "");
+        contentRef.current = firstChapter.content ?? "";
+      }
+      isDirtyRef.current = false;
+      setSaveStatus("idle");
       toast.success("Novel selesai di-generate!");
     } catch {
       toast.error("Gagal memuat novel setelah generate");
     }
   }, [novelId]);
+
+  const handleStepComplete = useCallback(
+    (data: { step: string; characters?: { id: string; name: string; description: string }[]; settings?: { id: string; name: string; description: string }[]; chapter?: { id: string; content: string; wordCount: number }; blurb?: string; totalWordCount?: number }) => {
+      setNovel((prev) => {
+        if (!prev) return prev;
+        const updated = { ...prev };
+
+        if (data.step === "characters" && data.characters) {
+          updated.characters = data.characters.map((c) => ({
+            ...c,
+            novelId: prev.id,
+            createdAt: null,
+          }));
+        }
+        if (data.step === "settings" && data.settings) {
+          updated.settings = data.settings.map((s) => ({
+            ...s,
+            novelId: prev.id,
+            createdAt: null,
+          }));
+        }
+        if (data.step === "chapters" && data.chapter) {
+          updated.chapters = prev.chapters.map((ch) =>
+            ch.id === data.chapter!.id
+              ? { ...ch, content: data.chapter!.content, wordCount: data.chapter!.wordCount }
+              : ch
+          );
+          if (data.totalWordCount !== undefined) {
+            updated.totalWordCount = data.totalWordCount;
+          }
+          if (data.chapter.id === activeChapterId) {
+            setContent(data.chapter.content);
+            contentRef.current = data.chapter.content;
+            isDirtyRef.current = false;
+          }
+        }
+        if (data.step === "blurb" && data.blurb) {
+          updated.blurb = data.blurb;
+        }
+
+        return updated;
+      });
+    },
+    [activeChapterId]
+  );
 
   useEffect(() => {
     if (!isDirtyRef.current || !activeChapterIdRef.current) return;
@@ -328,6 +355,42 @@ export default function NovelEditPage() {
     }
   };
 
+  const handleRegenerateChapter = async () => {
+    if (!activeChapterId || !novel) return;
+    await flushSave();
+    try {
+      const response = await fetch(
+        `/api/novels/${novelId}/generate/chapters/${activeChapterId}`,
+        { method: "POST" }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.chapter) {
+          setContent(data.chapter.content ?? "");
+          contentRef.current = data.chapter.content ?? "";
+          isDirtyRef.current = false;
+          setNovel((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              chapters: prev.chapters.map((ch) =>
+                ch.id === activeChapterId ? { ...ch, ...data.chapter } : ch
+              ),
+              totalWordCount: data.totalWordCount ?? prev.totalWordCount,
+            };
+          });
+        }
+        toast.success("Bab berhasil di-generate ulang!");
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Gagal menulis ulang bab");
+      }
+    } catch {
+      toast.error("Gagal menulis ulang bab");
+    }
+  };
+
   const wordCount = content.split(/\s+/).filter(Boolean).length;
   const totalWordCount =
     novel?.chapters.reduce((sum, c) => sum + (c.wordCount ?? 0), 0) ?? 0;
@@ -373,16 +436,20 @@ export default function NovelEditPage() {
         onDeleteClick={() => setDeleteChapterOpen(true)}
         onInfoClick={() => setInfoOpen(true)}
         onDeleteNovelClick={() => setDeleteNovelOpen(true)}
+        onRegenerateClick={handleRegenerateChapter}
       />
 
       {/* Generation Banner */}
-      <GenerationBanner
-        novelId={novelId}
-        generationStatus={generationStatus}
-        onStatusChange={setGenerationStatus}
-        onContentUpdate={handleContentUpdate}
-        onGenerationComplete={handleGenerationComplete}
-      />
+      {novel && (
+        <GenerationBanner
+          novelId={novelId}
+          novel={novel}
+          generationStatus={generationStatus}
+          onStatusChange={setGenerationStatus}
+          onGenerationComplete={handleGenerationComplete}
+          onStepComplete={handleStepComplete}
+        />
+      )}
 
       {/* Main Editor Area */}
       <motion.div

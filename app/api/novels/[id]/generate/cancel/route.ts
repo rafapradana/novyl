@@ -1,6 +1,5 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { getWorld } from "workflow/runtime";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -32,37 +31,12 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    if (!novel.workflowRunId) {
-      return NextResponse.json(
-        { error: "No active generation to cancel" },
-        { status: 404 }
-      );
-    }
-
-    if (novel.generationStatus !== "generating") {
-      return NextResponse.json(
-        { error: "Novel is not being generated" },
-        { status: 409 }
-      );
-    }
-
-    const world = await getWorld();
-    await world.events.create(novel.workflowRunId, {
-      eventType: "run_cancelled",
-    });
-
     await db
       .update(novels)
-      .set({
-        generationStatus: "idle",
-        workflowRunId: null,
-      })
+      .set({ generationStatus: "idle" })
       .where(eq(novels.id, novelId));
 
-    return NextResponse.json({
-      success: true,
-      message: "Generation cancelled",
-    });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to cancel generation:", error);
     return NextResponse.json(

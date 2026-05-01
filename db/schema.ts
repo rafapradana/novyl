@@ -104,7 +104,6 @@ export const novels = pgTable(
     totalWordCount: integer("total_word_count").default(0),
     blurb: text("blurb"),
     generationStatus: text("generation_status").default("idle"),
-    workflowRunId: text("workflow_run_id"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

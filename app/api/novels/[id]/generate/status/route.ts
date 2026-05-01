@@ -34,7 +34,6 @@ export async function GET(
     return NextResponse.json({
       success: true,
       status: novel.generationStatus,
-      workflowRunId: novel.workflowRunId,
       totalWordCount: novel.totalWordCount,
       blurb: novel.blurb,
     });

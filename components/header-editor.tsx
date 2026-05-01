@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Home, Info, Pencil, Trash2 } from "lucide-react";
+import { Home, Info, Pencil, Trash2, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface HeaderEditorProps {
@@ -16,6 +16,7 @@ interface HeaderEditorProps {
   onDeleteClick: () => void;
   onInfoClick: () => void;
   onDeleteNovelClick: () => void;
+  onRegenerateClick: () => void;
 }
 
 export function HeaderEditor({
@@ -29,6 +30,7 @@ export function HeaderEditor({
   onDeleteClick,
   onInfoClick,
   onDeleteNovelClick,
+  onRegenerateClick,
 }: HeaderEditorProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,16 @@ export function HeaderEditor({
                   >
                     <Trash2 className="h-4 w-4" />
                     Hapus Bab
+                  </button>
+                  <button
+                    onClick={() => {
+                      onRegenerateClick();
+                      setMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    <RefreshCw className="h-4 w-4 text-muted-foreground" />
+                    Tulis Ulang Bab
                   </button>
                 </div>
 

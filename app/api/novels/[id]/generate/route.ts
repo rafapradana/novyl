@@ -1,11 +1,9 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { start } from "workflow/api";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels } from "@/db/schema";
-import { generateNovelWorkflow } from "@/workflows/generate-novel";
 
 export async function POST(
   request: Request,
@@ -33,34 +31,12 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    if (novel.generationStatus === "generating") {
-      return NextResponse.json(
-        { error: "Novel is already being generated" },
-        { status: 409 }
-      );
-    }
-
     await db
       .update(novels)
-      .set({
-        generationStatus: "generating",
-      })
+      .set({ generationStatus: "generating" })
       .where(eq(novels.id, novelId));
 
-    const run = await start(generateNovelWorkflow, [novelId]);
-
-    await db
-      .update(novels)
-      .set({
-        workflowRunId: run.runId,
-      })
-      .where(eq(novels.id, novelId));
-
-    return NextResponse.json({
-      success: true,
-      runId: run.runId,
-      message: "Generation started",
-    });
+    return NextResponse.json({ success: true, message: "Generation started" });
   } catch (error) {
     console.error("Failed to start generation:", error);
     return NextResponse.json(

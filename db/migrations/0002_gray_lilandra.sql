@@ -1,0 +1,1 @@
+ALTER TABLE "novels" DROP COLUMN "workflow_run_id";

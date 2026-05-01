@@ -3,12 +3,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { eq, count, desc } from "drizzle-orm";
-import { start } from "workflow/api";
+import { eq, count, desc, inArray, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels, characters, settings, chapters } from "@/db/schema";
-import { generateNovelWorkflow } from "@/workflows/generate-novel";
 import type { CreateNovelInput, UpdateNovelInput } from "@/types/novel";
 import type { CreateCharacterInput } from "@/types/character";
 import type { CreateSettingInput } from "@/types/setting";
@@ -86,26 +84,6 @@ export async function createNovel(data: CreateNovelInput) {
     );
   }
 
-  try {
-    await db
-      .update(novels)
-      .set({ generationStatus: "generating" })
-      .where(eq(novels.id, novelId));
-
-    const run = await start(generateNovelWorkflow, [novelId]);
-
-    await db
-      .update(novels)
-      .set({ workflowRunId: run.runId })
-      .where(eq(novels.id, novelId));
-  } catch (error) {
-    console.error("Failed to start generation workflow:", error);
-    await db
-      .update(novels)
-      .set({ generationStatus: "failed" })
-      .where(eq(novels.id, novelId));
-  }
-
   revalidatePath("/novels");
   redirect(`/novel/${novelId}/edit`);
 }
@@ -116,20 +94,92 @@ export async function getNovelsByUser() {
   const userId = session.user.id;
 
   try {
-    const rows = await db
-      .select({
-        novel: novels,
-        chapterCount: count(chapters.id),
-      })
+    const userNovels = await db
+      .select()
       .from(novels)
-      .leftJoin(chapters, eq(novels.id, chapters.novelId))
       .where(eq(novels.userId, userId))
-      .groupBy(novels.id)
       .orderBy(desc(novels.createdAt));
 
-    return rows.map((row) => ({
-      ...row.novel,
-      chapterCount: Number(row.chapterCount),
+    if (userNovels.length === 0) return [];
+
+    const novelIds = userNovels.map((n) => n.id);
+
+    const [chapterCounts, characterCounts, settingCounts, chaptersWithContentCounts] =
+      await Promise.all([
+        db
+          .select({ novelId: chapters.novelId, count: count() })
+          .from(chapters)
+          .where(inArray(chapters.novelId, novelIds))
+          .groupBy(chapters.novelId),
+        db
+          .select({ novelId: characters.novelId, count: count() })
+          .from(characters)
+          .where(inArray(characters.novelId, novelIds))
+          .groupBy(characters.novelId),
+        db
+          .select({ novelId: settings.novelId, count: count() })
+          .from(settings)
+          .where(inArray(settings.novelId, novelIds))
+          .groupBy(settings.novelId),
+        db
+          .select({ novelId: chapters.novelId, count: count() })
+          .from(chapters)
+          .where(
+            and(
+              inArray(chapters.novelId, novelIds),
+              sql`${chapters.content} is not null and ${chapters.content} != ''`
+            )
+          )
+          .groupBy(chapters.novelId),
+      ]);
+
+    const chapterCountMap = new Map(
+      chapterCounts.map((r) => [r.novelId, Number(r.count)])
+    );
+    const characterCountMap = new Map(
+      characterCounts.map((r) => [r.novelId, Number(r.count)])
+    );
+    const settingCountMap = new Map(
+      settingCounts.map((r) => [r.novelId, Number(r.count)])
+    );
+    const chaptersWithContentMap = new Map(
+      chaptersWithContentCounts.map((r) => [r.novelId, Number(r.count)])
+    );
+
+    const isActuallyComplete = (novel: typeof userNovels[number]) => {
+      const charCount = characterCountMap.get(novel.id) ?? 0;
+      const settCount = settingCountMap.get(novel.id) ?? 0;
+      const chTotal = chapterCountMap.get(novel.id) ?? 0;
+      const chWithContent = chaptersWithContentMap.get(novel.id) ?? 0;
+      return (
+        charCount > 0 &&
+        settCount > 0 &&
+        chTotal > 0 &&
+        chWithContent === chTotal &&
+        !!novel.blurb &&
+        novel.blurb.trim().length > 0
+      );
+    };
+
+    const staleIds = userNovels
+      .filter((n) => n.generationStatus === "generating" && isActuallyComplete(n))
+      .map((n) => n.id);
+
+    if (staleIds.length > 0) {
+      await db
+        .update(novels)
+        .set({ generationStatus: "completed" })
+        .where(inArray(novels.id, staleIds));
+    }
+
+    return userNovels.map((novel) => ({
+      ...novel,
+      chapterCount: chapterCountMap.get(novel.id) ?? 0,
+      characterCount: characterCountMap.get(novel.id) ?? 0,
+      settingCount: settingCountMap.get(novel.id) ?? 0,
+      chaptersWithContent: chaptersWithContentMap.get(novel.id) ?? 0,
+      generationStatus:
+        staleIds.includes(novel.id) ? "completed" : novel.generationStatus,
     }));
   } catch (error) {
     throw new Error(

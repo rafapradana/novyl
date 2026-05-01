@@ -15,6 +15,13 @@
       "when": 1777393336885,
       "tag": "0001_clumsy_mathemanic",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777652635659,
+      "tag": "0002_gray_lilandra",
+      "breakpoints": true
     }
   ]
 }

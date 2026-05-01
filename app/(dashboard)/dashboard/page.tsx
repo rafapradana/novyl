@@ -315,13 +315,17 @@ export default function DashboardPage() {
                     {novel.generationStatus === "generating" && (
                       <Badge className="bg-blue-100 text-blue-800 text-xs">
                         <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        Generating
+                        {novel.chaptersWithContent > 0
+                          ? `${novel.chaptersWithContent}/${novel.chapterCount} Bab`
+                          : novel.characterCount > 0
+                            ? "Menulis Bab..."
+                            : "Menyiapkan..."}
                       </Badge>
                     )}
                     {novel.generationStatus === "completed" && (
                       <Badge className="bg-green-100 text-green-800 text-xs">
                         <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Selesai
+                        {novel.chapterCount} Bab
                       </Badge>
                     )}
                     {novel.generationStatus === "failed" && (

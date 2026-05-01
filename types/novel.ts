@@ -24,11 +24,13 @@ export interface UpdateNovelInput {
   genres?: string[];
   blurb?: string;
   generationStatus?: GenerationStatus;
-  workflowRunId?: string;
 }
 
 export interface NovelWithMeta extends Novel {
   chapterCount: number;
+  characterCount: number;
+  settingCount: number;
+  chaptersWithContent: number;
 }
 
 export interface NovelDetail extends Novel {
