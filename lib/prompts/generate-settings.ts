@@ -15,7 +15,7 @@ INSTRUKSI PENTING:
      * Signifikansi dalam cerita
 3. Latar harus mendukung tema dan mood cerita
 4. Pastikan latar memiliki potensi konflik dan dramatis
-5. Gunakan bahasa Indonesia yang kaya dan deskriptif
+5. Gunakan bahasa Indonesia yang natural dan deskriptif, hindari hiperbola berlebihan
 
 FORMAT OUTPUT:
 Output HARUS berupa JSON array dengan format berikut:

@@ -14,7 +14,7 @@ INSTRUKSI PENTING:
      * Peran dalam cerita (protagonis, antagonis, pendukung)
 3. Karakter harus memiliki konflik internal dan eksternal
 4. Pastikan karakter memiliki dinamika yang menarik satu sama lain
-5. Gunakan bahasa Indonesia yang kaya dan deskriptif
+5. Gunakan bahasa Indonesia yang natural dan deskriptif, hindari hiperbola berlebihan
 
 FORMAT OUTPUT:
 Output HARUS berupa JSON array dengan format berikut:
