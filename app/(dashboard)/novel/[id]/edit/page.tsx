@@ -494,7 +494,7 @@ export default function NovelEditPage() {
               value={content}
               onChange={(e) => handleContentChange(e.target.value)}
               placeholder="Mulai menulis bab ini..."
-              className="w-full h-full resize-none border-0 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none text-base md:text-lg leading-loose bg-white px-4 sm:px-6 md:px-8 pt-20 pb-20 md:pb-4 scrollbar-hidden"
+              className="w-full h-full resize-none border-0 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none text-base md:text-lg leading-loose bg-white px-4 sm:px-6 md:px-8 pt-20 pb-32 md:pb-24 scrollbar-hidden"
               style={{
                 fontFamily: "var(--font-geist-mono), ui-monospace, monospace",
                 boxShadow: "none",
