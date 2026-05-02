@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, X, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,10 @@ const STEP_LABELS: Record<string, string> = {
   blurb: "Menghasilkan blurb...",
 };
 
+function getDismissedKey(novelId: string) {
+  return `novyl:banner-dismissed:${novelId}`;
+}
+
 export function GenerationBanner({
   novelId,
   novel,
@@ -31,6 +35,14 @@ export function GenerationBanner({
   onGenerationComplete,
   onStepComplete,
 }: GenerationBannerProps) {
+  const [wasDismissed, setWasDismissed] = useState(() => {
+    try {
+      return localStorage.getItem(getDismissedKey(novelId)) === "1";
+    } catch {
+      return false;
+    }
+  });
+
   const {
     step,
     currentChapter,
@@ -70,21 +82,44 @@ export function GenerationBanner({
     }
   }, [generationStatus, isGenerating, startGeneration, hasContentToGenerate, onStatusChange]);
 
+  const clearDismissal = () => {
+    try {
+      localStorage.removeItem(getDismissedKey(novelId));
+    } catch {
+      // ignore
+    }
+    setWasDismissed(false);
+  };
+
   const handleStart = () => {
     autoStartedRef.current = true;
+    clearDismissal();
     startGeneration();
   };
 
   const handleRetry = () => {
     autoStartedRef.current = true;
+    clearDismissal();
     startGeneration();
   };
 
   const handleDismiss = () => {
+    try {
+      localStorage.setItem(getDismissedKey(novelId), "1");
+    } catch {
+      // ignore
+    }
+    setWasDismissed(true);
     onStatusChange("idle");
   };
 
-  if (generationStatus === "idle" && !isGenerating) {
+  // If completed/failed was already dismissed, treat as idle
+  const effectiveStatus =
+    (generationStatus === "completed" || generationStatus === "failed") && wasDismissed
+      ? "idle"
+      : generationStatus;
+
+  if (effectiveStatus === "idle" && !isGenerating) {
     if (!hasContentToGenerate) return null;
 
     return (
@@ -114,7 +149,7 @@ export function GenerationBanner({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={isGenerating ? "generating" : generationStatus}
+        key={isGenerating ? "generating" : effectiveStatus}
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
@@ -166,7 +201,7 @@ export function GenerationBanner({
           </div>
         )}
 
-        {generationStatus === "completed" && !isGenerating && (
+        {effectiveStatus === "completed" && !isGenerating && (
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
               <div className="flex items-center gap-3">
@@ -187,7 +222,7 @@ export function GenerationBanner({
           </div>
         )}
 
-        {generationStatus === "failed" && !isGenerating && (
+        {effectiveStatus === "failed" && !isGenerating && (
           <div className="bg-gradient-to-r from-red-50 to-rose-50 border-b border-red-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
               <div className="flex items-center justify-between gap-4">
