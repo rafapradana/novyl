@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, Layers, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,6 +33,25 @@ const itemVariants = {
 };
 
 export default function HomePage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isLoading, isAuthenticated, router]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-full bg-white">
+        <div className="animate-pulse text-sm text-muted-foreground">Memuat...</div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) return null;
+
   return (
     <div className="flex flex-col min-h-full bg-white text-black">
       <main className="flex flex-col flex-1">
