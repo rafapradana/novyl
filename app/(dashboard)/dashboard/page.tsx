@@ -465,15 +465,15 @@ export default function DashboardPage() {
               </div>
 
               {/* Actions Dropdown */}
-              <div className="absolute top-0 right-0 -mt-2 -mr-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 z-10">
+              <div className="absolute top-0 right-0 -mt-2 -mr-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity duration-150 z-10">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
                       onClick={(e) => e.stopPropagation()}
-                      className="h-7 w-7 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-black hover:border-gray-200 transition-[color,border-color,scale] duration-150 ease-out active:scale-[0.96]"
+                      className="h-8 w-8 sm:h-7 sm:w-7 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-black hover:border-gray-200 transition-[color,border-color,scale] duration-150 ease-out active:scale-[0.96]"
                       aria-label="Aksi novel"
                     >
-                      <MoreVertical className="h-3.5 w-3.5" />
+                      <MoreVertical className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="min-w-[140px]">
