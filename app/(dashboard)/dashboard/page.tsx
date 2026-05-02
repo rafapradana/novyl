@@ -256,7 +256,7 @@ export default function DashboardPage() {
       <div
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-white/95 backdrop-blur-sm shadow-sm border-b"
+            ? "bg-white/95 backdrop-blur-sm shadow-[var(--shadow-border)]"
             : "bg-transparent opacity-0 pointer-events-none"
         }`}
       >
@@ -470,7 +470,7 @@ export default function DashboardPage() {
                   <DropdownMenuTrigger asChild>
                     <button
                       onClick={(e) => e.stopPropagation()}
-                      className="h-8 w-8 sm:h-7 sm:w-7 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-black hover:border-gray-200 transition-[color,border-color,scale] duration-150 ease-out active:scale-[0.96]"
+                      className="h-8 w-8 sm:h-7 sm:w-7 rounded-full bg-white flex items-center justify-center text-gray-500 hover:text-black shadow-[var(--shadow-border)] hover:shadow-[var(--shadow-border-hover)] transition-[box-shadow,color,scale] duration-150 ease-out active:scale-[0.96]"
                       aria-label="Aksi novel"
                     >
                       <MoreVertical className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
