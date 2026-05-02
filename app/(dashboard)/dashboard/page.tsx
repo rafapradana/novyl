@@ -41,10 +41,10 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 import type { NovelWithMeta } from "@/types/novel";
 
@@ -533,12 +533,12 @@ export default function DashboardPage() {
 
       {/* Edit Novel Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-[92vw] sm:max-w-lg max-h-[85dvh] overflow-y-auto">
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Edit Novel</DialogTitle>
             <DialogDescription>Perbarui informasi novelmu.</DialogDescription>
           </DialogHeader>
-          <div className="py-4 space-y-4">
+          <DialogBody className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-1.5 block">Judul</label>
               <Input
@@ -586,7 +586,7 @@ export default function DashboardPage() {
                 className="min-h-[120px] resize-none"
               />
             </div>
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setEditDialogOpen(false)}>
               Batal

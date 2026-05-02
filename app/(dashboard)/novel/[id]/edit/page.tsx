@@ -14,13 +14,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 
 
@@ -592,12 +598,12 @@ export default function NovelEditPage() {
 
       {/* Info Novel Dialog */}
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
-        <DialogContent className="max-w-[92vw] sm:max-w-2xl max-h-[85dvh] overflow-y-auto duration-300">
+        <DialogContent className="max-w-[92vw] sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>{novel.title}</DialogTitle>
             <DialogDescription>Detail novel dan metadata.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-2">
+          <DialogBody className="space-y-4">
             <div>
               <h4 className="text-sm font-semibold mb-1">Premis</h4>
               <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -620,53 +626,71 @@ export default function NovelEditPage() {
                 ))}
               </div>
             </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-1">Karakter</h4>
-              {novel.characters.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Belum ada karakter.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {novel.characters.map((c) => (
-                    <li key={c.id} className="text-sm">
-                      <span className="font-medium">{c.name}</span>
-                      <p className="text-muted-foreground">{c.description}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-1">Latar</h4>
-              {novel.settings.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Belum ada latar.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {novel.settings.map((s) => (
-                    <li key={s.id} className="text-sm">
-                      <span className="font-medium">{s.name}</span>
-                      <p className="text-muted-foreground">{s.description}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-1">Bab</h4>
-              {novel.chapters.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Belum ada bab.</p>
-              ) : (
-                <ul className="space-y-3">
-                  {novel.chapters.map((ch) => (
-                    <li key={ch.id} className="text-sm">
-                      <span className="font-medium">Bab {ch.order}: {ch.title}</span>
-                      {ch.outline && (
-                        <p className="text-muted-foreground mt-0.5 whitespace-pre-wrap">{ch.outline}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+
+            <Accordion type="multiple" className="w-full">
+              <AccordionItem value="characters">
+                <AccordionTrigger className="text-sm font-semibold py-3">
+                  Karakter ({novel.characters.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  {novel.characters.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Belum ada karakter.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {novel.characters.map((c) => (
+                        <li key={c.id} className="text-sm">
+                          <span className="font-medium">{c.name}</span>
+                          <p className="text-muted-foreground leading-relaxed">{c.description}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="settings">
+                <AccordionTrigger className="text-sm font-semibold py-3">
+                  Latar ({novel.settings.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  {novel.settings.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Belum ada latar.</p>
+                  ) : (
+                    <ul className="space-y-3">
+                      {novel.settings.map((s) => (
+                        <li key={s.id} className="text-sm">
+                          <span className="font-medium">{s.name}</span>
+                          <p className="text-muted-foreground leading-relaxed">{s.description}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="chapters">
+                <AccordionTrigger className="text-sm font-semibold py-3">
+                  Bab ({novel.chapters.length})
+                </AccordionTrigger>
+                <AccordionContent>
+                  {novel.chapters.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Belum ada bab.</p>
+                  ) : (
+                    <ul className="space-y-4">
+                      {novel.chapters.map((ch) => (
+                        <li key={ch.id} className="text-sm">
+                          <span className="font-medium">Bab {ch.order}: {ch.title}</span>
+                          {ch.outline && (
+                            <p className="text-muted-foreground mt-1 whitespace-pre-wrap leading-relaxed">{ch.outline}</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
             <div>
               <h4 className="text-sm font-semibold mb-1">Total Kata</h4>
               <p className="text-sm text-muted-foreground tabular-nums">{totalWordCount} kata</p>
@@ -699,7 +723,7 @@ export default function NovelEditPage() {
                 )}
               </div>
             </div>
-          </div>
+          </DialogBody>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               variant="destructive"
@@ -709,11 +733,9 @@ export default function NovelEditPage() {
             >
               Hapus Novel
             </Button>
-            <DialogClose asChild>
-              <Button variant="outline" size="sm">
-                Tutup
-              </Button>
-            </DialogClose>
+            <Button variant="outline" size="sm" onClick={() => setInfoOpen(false)}>
+              Tutup
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -725,7 +747,7 @@ export default function NovelEditPage() {
             <DialogTitle>Bab Baru</DialogTitle>
             <DialogDescription>Masukkan judul dan outline untuk bab baru.</DialogDescription>
           </DialogHeader>
-          <div className="py-4 space-y-4">
+          <DialogBody className="space-y-4">
             <Input
               value={newChapterTitle}
               onChange={(e) => setNewChapterTitle(e.target.value)}
@@ -740,7 +762,7 @@ export default function NovelEditPage() {
               placeholder="Outline bab (opsional)..."
               className="w-full resize-none border-0 border-b-2 border-gray-200 bg-transparent px-0 text-sm min-h-[80px] outline-none focus:border-black transition-colors"
             />
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setNewChapterOpen(false)}>
               Batal
@@ -758,7 +780,7 @@ export default function NovelEditPage() {
           <DialogHeader>
             <DialogTitle>Ubah Nama Bab</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
+          <DialogBody>
             <Input
               value={renameChapterTitle}
               onChange={(e) => setRenameChapterTitle(e.target.value)}
@@ -767,7 +789,7 @@ export default function NovelEditPage() {
                 if (e.key === "Enter") handleRenameChapter();
               }}
             />
-          </div>
+          </DialogBody>
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setRenameChapterOpen(false)}>
               Batal

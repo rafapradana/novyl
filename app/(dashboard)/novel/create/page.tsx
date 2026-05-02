@@ -13,7 +13,9 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { createNovel } from "@/lib/actions/novel-actions";
 
@@ -364,13 +366,13 @@ export default function CreateNovelPage() {
               open={characterDialogOpen}
               onOpenChange={setCharacterDialogOpen}
             >
-              <DialogContent className="sm:rounded-lg p-5 md:p-6 max-w-[90vw] md:max-w-md">
+              <DialogContent className="max-w-[92vw] md:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="text-base md:text-lg font-semibold">
                     Tambah Karakter
                   </DialogTitle>
                 </DialogHeader>
-                <div className="mt-4 space-y-4">
+                <DialogBody className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">
                       Nama Karakter
@@ -405,13 +407,15 @@ export default function CreateNovelPage() {
                       }}
                     />
                   </div>
+                </DialogBody>
+                <DialogFooter>
                   <Button
                     onClick={saveCharacter}
                     className="w-full bg-black text-white hover:bg-black/90 transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
                   >
                     Simpan
                   </Button>
-                </div>
+                </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
