@@ -86,13 +86,7 @@ export default function LoginPage() {
             {loading ? "Memuat..." : "Login"}
           </Button>
         </form>
-        <div className="mt-8 flex flex-col items-center gap-2 text-sm text-muted-foreground">
-          <Link
-            href="/forgot-password"
-            className="hover:text-foreground underline-offset-4 hover:underline"
-          >
-            Lupa password?
-          </Link>
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           <span>
             Belum punya akun?{" "}
             <Link
