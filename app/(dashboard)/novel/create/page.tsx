@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, X, Plus, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, X, Plus, Loader2, Home } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ const stepVariants = {
 };
 
 export default function CreateNovelPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
 
@@ -701,6 +703,15 @@ export default function CreateNovelPage() {
 
   return (
     <div className="relative min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center py-6 md:py-8">
+      {/* Back to Home */}
+      <button
+        onClick={() => router.push("/dashboard")}
+        className="absolute top-4 left-4 md:top-6 md:left-6 inline-flex items-center gap-1.5 text-xs md:text-sm font-medium text-gray-500 hover:text-black transition-[color,scale] duration-150 ease-out active:scale-[0.96]"
+      >
+        <Home className="w-3.5 h-3.5 md:w-4 md:h-4" />
+        Beranda
+      </button>
+
       {/* Header */}
       <div className="text-center mb-4">
         <p className="text-xs md:text-sm font-medium text-gray-400">

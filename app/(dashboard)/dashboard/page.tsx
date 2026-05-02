@@ -14,9 +14,12 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Pencil,
+  Trash2,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
-import { getNovelsByUser } from "@/lib/actions/novel-actions";
+import { getNovelsByUser, deleteNovel, updateNovel } from "@/lib/actions/novel-actions";
 import {
   BookCover,
   BookTitle,
@@ -25,6 +28,7 @@ import {
 } from "@/components/book-cover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -33,7 +37,30 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import type { NovelWithMeta } from "@/types/novel";
+
+const GENRES = [
+  "Romansa",
+  "Horror",
+  "Misteri",
+  "Petualangan",
+  "Remaja",
+  "Komedi",
+  "Thriller",
+  "Fiksi Ilmiah",
+  "Religi",
+  "Fiksi Sejarah",
+  "Fantasi",
+];
 
 function getGreeting(hour: number, name: string): string {
   if (hour >= 4 && hour < 10) return `Selamat Pagi, ${name} !`;
@@ -72,6 +99,19 @@ export default function DashboardPage() {
   const [search, setSearch] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Dialog states
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedNovel, setSelectedNovel] = useState<NovelWithMeta | null>(null);
+
+  // Edit form state
+  const [editTitle, setEditTitle] = useState("");
+  const [editPremise, setEditPremise] = useState("");
+  const [editSynopsis, setEditSynopsis] = useState("");
+  const [editGenres, setEditGenres] = useState<string[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Detect scroll for sticky header
   useEffect(() => {
     const handleScroll = () => {
@@ -99,6 +139,82 @@ export default function DashboardPage() {
 
     fetchNovels();
   }, []);
+
+  const openDeleteDialog = (novel: NovelWithMeta) => {
+    setSelectedNovel(novel);
+    setDeleteDialogOpen(true);
+  };
+
+  const openEditDialog = (novel: NovelWithMeta) => {
+    setSelectedNovel(novel);
+    setEditTitle(novel.title);
+    setEditPremise(novel.premise);
+    setEditSynopsis(novel.synopsis);
+    setEditGenres(novel.genres);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteNovel = async () => {
+    if (!selectedNovel) return;
+    setIsDeleting(true);
+    try {
+      await deleteNovel(selectedNovel.id);
+      setNovels((prev) => prev.filter((n) => n.id !== selectedNovel.id));
+      toast.success("Novel dihapus");
+      setDeleteDialogOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal menghapus novel");
+    } finally {
+      setIsDeleting(false);
+      setSelectedNovel(null);
+    }
+  };
+
+  const handleUpdateNovel = async () => {
+    if (!selectedNovel) return;
+    if (!editTitle.trim() || !editPremise.trim() || !editSynopsis.trim()) {
+      toast.error("Judul, premis, dan sinopsis wajib diisi");
+      return;
+    }
+    if (editGenres.length === 0) {
+      toast.error("Pilih minimal satu genre");
+      return;
+    }
+    setIsEditing(true);
+    try {
+      await updateNovel(selectedNovel.id, {
+        title: editTitle.trim(),
+        premise: editPremise.trim(),
+        synopsis: editSynopsis.trim(),
+        genres: editGenres,
+      });
+      setNovels((prev) =>
+        prev.map((n) =>
+          n.id === selectedNovel.id
+            ? {
+                ...n,
+                title: editTitle.trim(),
+                premise: editPremise.trim(),
+                synopsis: editSynopsis.trim(),
+                genres: editGenres,
+              }
+            : n
+        )
+      );
+      toast.success("Novel diperbarui");
+      setEditDialogOpen(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal memperbarui novel");
+    } finally {
+      setIsEditing(false);
+    }
+  };
+
+  const toggleEditGenre = (genre: string) => {
+    setEditGenres((prev) =>
+      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
+    );
+  };
 
   const greeting = useMemo(() => {
     if (!user?.name) return "";
@@ -285,7 +401,7 @@ export default function DashboardPage() {
           {filteredNovels.map((novel) => (
             <div
               key={novel.id}
-              className="flex flex-col items-center cursor-pointer group"
+              className="flex flex-col items-center cursor-pointer group relative"
               onClick={() => router.push(`/novel/${novel.id}/edit`)}
               role="button"
               tabIndex={0}
@@ -347,10 +463,145 @@ export default function DashboardPage() {
                     : "—"}
                 </p>
               </div>
+
+              {/* Actions Dropdown */}
+              <div className="absolute top-0 right-0 -mt-2 -mr-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 z-10">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-7 w-7 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-black hover:border-gray-200 transition-[color,border-color,scale] duration-150 ease-out active:scale-[0.96]"
+                      aria-label="Aksi novel"
+                    >
+                      <MoreVertical className="h-3.5 w-3.5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-[140px]">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditDialog(novel);
+                      }}
+                    >
+                      <Pencil className="h-3.5 w-3.5 mr-2" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openDeleteDialog(novel);
+                      }}
+                      className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-2" />
+                      Hapus
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* Delete Novel Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Hapus Novel</DialogTitle>
+            <DialogDescription>
+              Yakin ingin menghapus novel <strong>{selectedNovel?.title}</strong>? Semua bab, karakter,
+              dan latar akan ikut terhapus. Tindakan ini tidak dapat dibatalkan.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setDeleteDialogOpen(false)}>
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDeleteNovel}
+              disabled={isDeleting}
+              className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+            >
+              {isDeleting ? "Menghapus..." : "Hapus"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Novel Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-[92vw] sm:max-w-lg max-h-[85dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Novel</DialogTitle>
+            <DialogDescription>Perbarui informasi novelmu.</DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Judul</label>
+              <Input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                placeholder="Judul novel..."
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Genre</label>
+              <div className="flex flex-wrap gap-2">
+                {GENRES.map((genre) => {
+                  const selected = editGenres.includes(genre);
+                  return (
+                    <button
+                      key={genre}
+                      onClick={() => toggleEditGenre(genre)}
+                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition-[background-color,color,scale] duration-150 ease-out active:scale-[0.96] ${
+                        selected
+                          ? "bg-black text-white"
+                          : "bg-gray-100 text-black hover:bg-gray-200"
+                      }`}
+                    >
+                      {genre}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Premis</label>
+              <Textarea
+                value={editPremise}
+                onChange={(e) => setEditPremise(e.target.value)}
+                placeholder="Tulis premis novelmu..."
+                className="min-h-[80px] resize-none"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Sinopsis</label>
+              <Textarea
+                value={editSynopsis}
+                onChange={(e) => setEditSynopsis(e.target.value)}
+                placeholder="Tulis sinopsis novelmu..."
+                className="min-h-[120px] resize-none"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setEditDialogOpen(false)}>
+              Batal
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleUpdateNovel}
+              disabled={isEditing}
+              className="transition-[background-color,scale] duration-150 ease-out active:scale-[0.96]"
+            >
+              {isEditing ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
