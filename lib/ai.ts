@@ -34,3 +34,27 @@ export function getStatusCode(error: unknown): number | null {
   }
   return null;
 }
+
+type CallModelParams = {
+  instructions: string;
+  input: string;
+  temperature?: number;
+  maxOutputTokens?: number;
+};
+
+export async function callModelWithFallback(params: CallModelParams): Promise<string> {
+  try {
+    const result = ai.callModel({
+      model: MODELS.primary,
+      ...params,
+    });
+    return await result.getText();
+  } catch (primaryError) {
+    console.warn(`Primary model (${MODELS.primary}) failed, trying fallback:`, primaryError);
+    const fallbackResult = ai.callModel({
+      model: MODELS.fallback,
+      ...params,
+    });
+    return await fallbackResult.getText();
+  }
+}

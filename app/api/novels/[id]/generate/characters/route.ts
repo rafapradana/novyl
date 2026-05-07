@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels, characters } from "@/db/schema";
-import { ai, MODELS, getErrorMessage } from "@/lib/ai";
+import { callModelWithFallback, getErrorMessage } from "@/lib/ai";
 import {
   getCharacterGenerationSystemPrompt,
   getCharacterGenerationPrompt,
@@ -57,14 +57,12 @@ export async function POST(
       novel.genres
     );
 
-    const result = ai.callModel({
-      model: MODELS.primary,
+    const text = await callModelWithFallback({
       instructions: systemPrompt,
       input: userPrompt,
       temperature: 0.8,
     });
 
-    const text = await result.getText();
     const parsed = JSON.parse(text) as { name: string; description: string }[];
 
     if (!Array.isArray(parsed)) {

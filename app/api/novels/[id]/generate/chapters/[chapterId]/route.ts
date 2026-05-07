@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels, chapters, characters, settings } from "@/db/schema";
-import { ai, MODELS, getErrorMessage } from "@/lib/ai";
+import { callModelWithFallback, getErrorMessage } from "@/lib/ai";
 import {
   getChapterWritingSystemPrompt,
   getChapterWritingPrompt,
@@ -123,15 +123,12 @@ export async function POST(
       chapter.targetWordCountMax ?? 3500
     );
 
-    const result = ai.callModel({
-      model: MODELS.primary,
+    const content = await callModelWithFallback({
       instructions: systemPrompt,
       input: userPrompt,
       temperature: 0.7,
       maxOutputTokens: Math.ceil((chapter.targetWordCountMax ?? 3500) * 2),
     });
-
-    const content = await result.getText();
     const wordCount = content.split(/\s+/).filter(Boolean).length;
 
     const [updatedChapter] = await db

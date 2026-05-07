@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { novels, characters } from "@/db/schema";
-import { ai, MODELS, getErrorMessage } from "@/lib/ai";
+import { callModelWithFallback, getErrorMessage } from "@/lib/ai";
 import {
   getBlurbGenerationSystemPrompt,
   getBlurbGenerationPrompt,
@@ -60,14 +60,11 @@ export async function POST(
       characterNames
     );
 
-    const result = ai.callModel({
-      model: MODELS.primary,
+    const blurb = await callModelWithFallback({
       instructions: systemPrompt,
       input: userPrompt,
       temperature: 0.7,
     });
-
-    const blurb = await result.getText();
 
     const [updatedNovel] = await db
       .update(novels)
