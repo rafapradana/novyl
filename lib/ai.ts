@@ -42,19 +42,32 @@ type CallModelParams = {
   maxOutputTokens?: number;
 };
 
+async function callChatModel(model: string, params: CallModelParams): Promise<string> {
+  const result = await ai.chat.send({
+    chatRequest: {
+      model,
+      messages: [
+        { role: "system", content: params.instructions },
+        { role: "user", content: params.input },
+      ],
+      temperature: params.temperature,
+      maxTokens: params.maxOutputTokens,
+    },
+  });
+
+  return result.choices[0]?.message?.content ?? "";
+}
+
 export async function callModelWithFallback(params: CallModelParams): Promise<string> {
   try {
-    const result = ai.callModel({
-      model: MODELS.primary,
-      ...params,
-    });
-    return await result.getText();
+    return await callChatModel(MODELS.primary, params);
   } catch (primaryError) {
     console.warn(`Primary model (${MODELS.primary}) failed, trying fallback:`, primaryError);
-    const fallbackResult = ai.callModel({
-      model: MODELS.fallback,
-      ...params,
-    });
-    return await fallbackResult.getText();
+    try {
+      return await callChatModel(MODELS.fallback, params);
+    } catch (fallbackError) {
+      console.error(`Fallback model (${MODELS.fallback}) also failed:`, fallbackError);
+      throw fallbackError;
+    }
   }
 }
