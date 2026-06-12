@@ -65,6 +65,9 @@ SaaS AI novel ghostwriter. **User** menulis **Novel** bab per bab dengan AI Agen
 | [`CONTEXT.md`](./CONTEXT.md) | Glosarium, relasi entitas, lifecycle, example dialogues |
 | [`docs/brief.md`](./docs/brief.md) | Executive summary, input/output, stack, pipeline, NFR |
 | [`docs/prd-v1.md`](./docs/prd-v1.md) | PRD lengkap: stories, modul, testing, out of scope |
+| [`docs/db-schema.md`](./docs/db-schema.md) | Schema Supabase: tabel, RLS, indeks, migrasi |
+| [`docs/api.md`](./docs/api.md) | API contracts: endpoint, request/response, SSE, error codes |
+| [`docs/slices.md`](./docs/slices.md) | Vertical slices: dependency, scope, acceptance criteria |
 
 ### Arsitektur (ADR)
 
