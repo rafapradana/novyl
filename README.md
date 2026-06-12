@@ -15,6 +15,15 @@ Platform SaaS bagi penulis untuk berkolaborasi dengan AI Agents dalam menulis no
 
 </div>
 
+> [!CAUTION]
+> **LICENSE WARNING — PROPRIETARY SOFTWARE**
+>
+> This project is **NOT open source**. It is protected by a **Custom Proprietary License** owned by **Muhammad Rafa Shaquille Pradana**.
+>
+> You are **ONLY** allowed to view the source code and run it locally for evaluation. **DO NOT** modify, distribute, resell, rebrand, fork, or use this project commercially without explicit written permission. Violations will result in **legal action and criminal referral** under applicable copyright and intellectual property laws.
+>
+> See [`LICENSE.md`](./LICENSE.md) for full terms.
+
 ---
 
 ## Tentang
@@ -110,11 +119,13 @@ Buka [http://localhost:3000](http://localhost:3000) di browser.
 
 ## License
 
-This project is licensed under a **Custom Proprietary License** — see [`LICENSE.md`](./LICENSE.md) for details.
-
-**All Rights Reserved.** Copyright (c) 2026 Muhammad Rafa Shaquille Pradana.
-
-Dilarang menjalankan, memodifikasi, mendistribusikan, menjual ulang, me-rebrand, atau melakukan forking tanpa izin tertulis dari pemegang hak cipta.
+> [!WARNING]
+> This project is **proprietary**. It is **NOT** open source. All rights reserved by **Muhammad Rafa Shaquille Pradana**.
+>
+> - **ALLOWED:** View source code, run locally for evaluation
+> - **FORBIDDEN:** Modify, distribute, resell, rebrand, fork, commercial use
+>
+> Full license: [`LICENSE.md`](./LICENSE.md)
 
 ---
 
