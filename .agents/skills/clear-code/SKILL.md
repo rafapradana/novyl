@@ -14,7 +14,7 @@ description: >
 Every line of code you write should communicate its intent so clearly that a developer reading it
 for the first time never has to guess what something does or why it exists. This is not about
 following arbitrary style rules—it is about eliminating the cognitive load that comes from vague
-命名, hidden intent, and misleading structure. Ambiguity in code is a bug: it slows down
+naming, hidden intent, and misleading structure. Ambiguity in code is a bug: it slows down
 readers, introduces mistakes, and makes future changes risky.
 
 ## Core Principle: The Reader Comes First
