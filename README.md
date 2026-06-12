@@ -51,20 +51,20 @@ Unlike typical AI generators that treat each session in isolation, Novyl uses a 
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  Frontend + API                                      │
+│  Frontend + API                                     │
 │  Next.js 16 (App Router, TypeScript, Node runtime)  │
 ├─────────────────────────────────────────────────────┤
-│  AI Pipeline                                         │
+│  AI Pipeline                                        │
 │  LangGraph.js · OpenRouter (Gemini Flash / Lite)    │
 ├─────────────────────────────────────────────────────┤
-│  Data                                                │
-│  Supabase — PostgreSQL · Auth · pgvector · pgmq      │
+│  Data                                               │
+│  Supabase — PostgreSQL · Auth · pgvector · pgmq     │
 ├─────────────────────────────────────────────────────┤
-│  Entity Memory                                       │
-│  Mem0 Cloud (Derived canon)                          │
+│  Entity Memory                                      │
+│  Mem0 Cloud (Derived canon)                         │
 ├─────────────────────────────────────────────────────┤
-│  UI                                                  │
-│  shadcn/ui · Tiptap · Tailwind CSS                   │
+│  UI                                                 │
+│  shadcn/ui · Tiptap · Tailwind CSS                  │
 └─────────────────────────────────────────────────────┘
 ```
 
