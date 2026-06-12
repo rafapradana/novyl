@@ -4,14 +4,14 @@
 
 **AI-Powered Novel Ghostwriter**
 
-Platform SaaS bagi penulis untuk berkolaborasi dengan AI Agents dalam menulis novel panjang secara terstruktur dan konsisten — menjaga konsistensi lore, plot, dan karakter hingga ratusan bab.
+Platform SaaS for writers to collaborate with AI Agents in writing long-form novels chapter by chapter, with consistency maintained across hundreds of chapters.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)
 ![License](https://img.shields.io/badge/License-proprietary-red)
 
-[Getting Started](#getting-started) · [Dokumentasi](#dokumentasi) · [License](#license)
+[Getting Started](#getting-started) · [Documentation](#documentation) · [License](#license)
 
 </div>
 
@@ -26,26 +26,26 @@ Platform SaaS bagi penulis untuk berkolaborasi dengan AI Agents dalam menulis no
 
 ---
 
-## Tentang
+## About
 
-Novyl menyelesaikan masalah utama penulis novel yang menggunakan AI general-purpose: **plot holes, karakter lupa detail, dan inkonsistensi lore** saat manuskrip melebihi beberapa puluh bab.
+Novyl solves the core problem faced by novel writers using general-purpose AI: **plot holes, forgotten character details, and inconsistent lore** as manuscripts grow past a few dozen chapters.
 
-Berbeda dengan AI generator biasa yang memperlakukan setiap sesi secara terisolasi, Novyl menggunakan **Multi-Agent System** dan **Dynamic Context Management** untuk menjaga cerita konsisten dari Bab 1 hingga Bab 500+.
+Unlike typical AI generators that treat each session in isolation, Novyl uses a **Multi-Agent System** and **Dynamic Context Management** to keep stories consistent from Chapter 1 to Chapter 500+.
 
-**Status:** Early access — open signup, tanpa billing, tanpa export.
+**Status:** Early access — open signup, no billing, no export.
 
-## Fitur
+## Features
 
-| Fitur | Deskripsi |
-|-------|-----------|
-| **Sequential Chapter Generation** | AI menulis bab berurutan dengan context gathering dinamis |
+| Feature | Description |
+|---------|-------------|
+| **Sequential Chapter Generation** | AI writes chapters in order with dynamic context gathering |
 | **4-Phase AI Pipeline** | Context Gathering → Scene Planning → Incremental Generation → Finalization |
 | **Consistency Engine** | Declared canon, Derived canon (Mem0), chapter summaries, pgvector RAG |
-| **Stale Chapter Tracking** | Peringatan otomatis jika perubahan upstream mempengaruhi bab berikutnya |
-| **Plot Checkpoints** | Mode opt-in untuk approve/reject beat cerita irreversible |
-| **Partial Rewrite** | Rewrite bagian tertentu tanpa regenerate seluruh bab |
-| **Full Chapter Regeneration** | Regenerate bab dari outline + context snapshot point-in-time |
-| **Story Memory Sync** | Sinkronisasi memori AI secara eksplisit setelah edit manual |
+| **Stale Chapter Tracking** | Automatic warnings when upstream changes affect later chapters |
+| **Plot Checkpoints** | Opt-in mode to approve/reject irreversible story beats |
+| **Partial Rewrite** | Rewrite selected passages without regenerating the entire chapter |
+| **Full Chapter Regeneration** | Regenerate a chapter from outline + point-in-time context snapshot |
+| **Story Memory Sync** | Explicit AI memory synchronization after manual edits |
 
 ## Tech Stack
 
@@ -85,7 +85,7 @@ npm install
 
 ### 3. Setup environment variables
 
-Buat file `.env.local` di root project:
+Create a `.env.local` file in the project root:
 
 ```env
 # Supabase
@@ -99,23 +99,23 @@ OPENROUTER_API_KEY=your-openrouter-key
 MEM0_API_KEY=your-mem0-key
 ```
 
-### 4. Jalankan development server
+### 4. Run the development server
 
 ```bash
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Dokumentasi
+## Documentation
 
-| Dokumen | Deskripsi |
-|---------|-----------|
-| [`CONTEXT.md`](./CONTEXT.md) | Domain glossary, aturan bisnis, lifecycle Chapter |
-| [`docs/brief.md`](./docs/brief.md) | Executive summary, stack, pipeline AI, NFR |
-| [`docs/prd-v1.md`](./docs/prd-v1.md) | PRD lengkap: user stories, modul backend, API contracts |
-| [`docs/adr/`](./docs/adr/) | Architecture Decision Records (4 ADR) |
-| [`docs/ui/`](./docs/ui/) | UI plan: halaman, modal, komponen, user flows |
+| Document | Description |
+|----------|-------------|
+| [`CONTEXT.md`](./CONTEXT.md) | Domain glossary, business rules, Chapter lifecycle |
+| [`docs/brief.md`](./docs/brief.md) | Executive summary, stack, AI pipeline, NFR |
+| [`docs/prd-v1.md`](./docs/prd-v1.md) | Full PRD: user stories, backend modules, API contracts |
+| [`docs/adr/`](./docs/adr/) | Architecture Decision Records (4 ADRs) |
+| [`docs/ui/`](./docs/ui/) | UI plan: pages, modals, components, user flows |
 
 ## License
 
