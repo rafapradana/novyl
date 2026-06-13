@@ -72,18 +72,31 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
 
   return (
     <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-      {/* Left: logo + name */}
+      {/* Mobile: centered logo */}
+      <div className="flex flex-1 items-center justify-center md:hidden">
+        <Link
+          href={NOVELS_PATH}
+          className="flex items-center gap-2 font-semibold text-sm"
+        >
+          <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <span className="text-xs font-bold">N</span>
+          </div>
+          Novyl
+        </Link>
+      </div>
+
+      {/* Desktop: left logo */}
       <Link
         href={NOVELS_PATH}
-        className="flex items-center gap-2 font-semibold text-sm shrink-0"
+        className="hidden md:flex items-center gap-2 font-semibold text-sm shrink-0"
       >
         <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <span className="text-xs font-bold">N</span>
         </div>
-        <span className="hidden sm:inline">Novyl</span>
+        Novyl
       </Link>
 
-      {/* Center: tabs — desktop only */}
+      {/* Desktop: center tabs */}
       <div className="flex-1 hidden md:flex justify-center">
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
@@ -99,53 +112,53 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
         </Tabs>
       </div>
 
-      {/* Right: avatar + name */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-md p-1.5 hover:bg-accent transition-colors shrink-0"
-          >
-            <Avatar className="size-7 rounded-md">
-              <AvatarFallback className="rounded-md text-xs">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm hidden sm:inline">
-              {user.displayName}
-            </span>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-fit" align="end" sideOffset={8}>
-          <DropdownMenuLabel className="p-0 font-normal">
-            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-              <Avatar className="size-8 rounded-lg">
-                <AvatarFallback className="rounded-lg">
+      {/* Desktop: avatar + name */}
+      <div className="hidden md:flex shrink-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-2 rounded-md p-1.5 hover:bg-accent transition-colors"
+            >
+              <Avatar className="size-7 rounded-md">
+                <AvatarFallback className="rounded-md text-xs">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.displayName}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
-                </span>
+              <span className="text-sm">{user.displayName}</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-fit" align="end" sideOffset={8}>
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="size-8 rounded-lg">
+                  <AvatarFallback className="rounded-lg">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user.displayName}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </span>
+                </div>
               </div>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem disabled>
-              <SettingsIcon />
-              Pengaturan akun
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem disabled>
+                <SettingsIcon />
+                Pengaturan akun
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => signOutAndRedirect(router)}>
+              <LogOutIcon />
+              Keluar
             </DropdownMenuItem>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOutAndRedirect(router)}>
-            <LogOutIcon />
-            Keluar
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }
