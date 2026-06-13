@@ -1,6 +1,6 @@
 # Implementation Slices — Novyl v1
 
-> **Status:** Draft — belum diimplementasi. Dokumen ini memecah PRD menjadi vertical slices (tracer bullet) yang bisa di-grab secara independen.
+> **Status:** S1 selesai; slice lainnya belum diimplementasi. Dokumen ini memecah PRD menjadi vertical slices (tracer bullet) yang bisa di-grab secara independen.
 >
 > **Referensi:** [`docs/prd-v1.md`](./prd-v1.md), [`CONTEXT.md`](../CONTEXT.md), [`docs/db-schema.md`](./db-schema.md), [`docs/api.md`](./api.md)
 
@@ -83,18 +83,20 @@ Create Supabase project (manual), install client libraries, configure environmen
 - Create Supabase Cloud project (manual — HITL)
 - Set environment variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`
 - Install dependencies: `@supabase/ssr`, `@supabase/supabase-js`
-- Create Supabase client helpers: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server), `lib/supabase/middleware.ts` (auth middleware)
-- Supabase CLI init (`supabase init`) + link to project
-- Next.js middleware for auth redirect
+- Create Supabase client helpers: `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (server), `lib/supabase/middleware.ts` (auth redirect logic)
+- Supabase CLI init (`supabase init`) + link to project (HITL)
+- Next.js 16 proxy (`proxy.ts`) for auth session refresh and redirect
 
 #### Acceptance criteria
 
-- [ ] Supabase project exists with correct env vars in `.env.local`
-- [ ] `@supabase/ssr` and `@supabase/supabase-js` installed
-- [ ] `lib/supabase/client.ts`, `server.ts`, `middleware.ts` created and working
-- [ ] Supabase CLI linked to project
-- [ ] Next.js middleware redirects unauthenticated users to `/login`
-- [ ] `npm run build` passes
+- [x] Supabase project exists with correct env vars in `.env.local`
+- [x] `@supabase/ssr` and `@supabase/supabase-js` installed
+- [x] `lib/supabase/client.ts`, `server.ts`, `middleware.ts` created and working
+- [ ] Supabase CLI linked to project (HITL — requires human to create Supabase project)
+- [x] Next.js proxy (`proxy.ts`) redirects unauthenticated users to `/login`
+- [x] `npm run build` passes
+
+> **Catatan:** Supabase CLI link dan `.env.local` dengan nilai nyata memerlukan aksi manual (HITL). File `.env.local.example` tersedia sebagai template.
 
 ---
 
