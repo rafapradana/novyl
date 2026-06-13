@@ -6,10 +6,6 @@ import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 
 const LOGIN_PATH = "/login";
 
-/**
- * App shell layout — shared for all authenticated routes.
- * Checks auth and redirects unauthenticated users to /login.
- */
 export default async function AppLayout({
   children,
 }: Readonly<{
@@ -26,12 +22,13 @@ export default async function AppLayout({
 
   const displayName =
     user.user_metadata?.display_name ?? user.email ?? "User";
+  const email = user.email ?? "";
 
   return (
     <SidebarProvider>
-      <AppSidebar user={{ displayName, email: user.email ?? "" }} />
+      <AppSidebar />
       <SidebarInset>
-        <AppHeader />
+        <AppHeader user={{ displayName, email }} />
         <main className="flex flex-1 flex-col">{children}</main>
       </SidebarInset>
     </SidebarProvider>

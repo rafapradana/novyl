@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpenIcon, ArchiveIcon, type LucideIcon } from "lucide-react";
-import { NavUser } from "@/components/nav-user";
+import { BookOpenIcon, ArchiveIcon, PlusIcon, type LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
+  SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -26,64 +25,57 @@ const NAV_ITEMS: readonly NavItem[] = [
   { title: "Arsip", url: "/novels?archived=true", icon: ArchiveIcon },
 ] as const;
 
-interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  readonly user: {
-    readonly displayName: string;
-    readonly email: string;
-  };
-}
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 
 function isNavItemActive(itemUrl: string, currentPathname: string): boolean {
-  // "Novel saya" (/novels) should only be active on exact match
   if (itemUrl === "/novels") {
     return currentPathname === "/novels";
   }
   return currentPathname.startsWith(itemUrl);
 }
 
-export function AppSidebar({ user, ...props }: AppSidebarProps): React.JSX.Element {
+export function AppSidebar(props: AppSidebarProps): React.JSX.Element {
   const pathname = usePathname();
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/novels">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <span className="text-xs font-bold">N</span>
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Novyl</span>
-                </div>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {NAV_ITEMS.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={isNavItemActive(item.url, pathname)}
-              >
-                <Link href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
+        <SidebarGroup>
+          <SidebarMenu>
+            {NAV_ITEMS.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isNavItemActive(item.url, pathname)}
+                  tooltip={item.title}
+                >
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup className="mt-auto">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Novel baru">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-2 text-sidebar-foreground"
+                  disabled
+                >
+                  <PlusIcon />
+                  <span>Novel baru</span>
+                </Button>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser
-          user={{ name: user.displayName, email: user.email }}
-        />
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
