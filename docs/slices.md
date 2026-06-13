@@ -1,6 +1,6 @@
 # Implementation Slices — Novyl v1
 
-> **Status:** S1 selesai; slice lainnya belum diimplementasi. Dokumen ini memecah PRD menjadi vertical slices (tracer bullet) yang bisa di-grab secara independen.
+> **Status:** S1, S2, S3 selesai; slice lainnya belum diimplementasi. Dokumen ini memecah PRD menjadi vertical slices (tracer bullet) yang bisa di-grab secara independen.
 >
 > **Referensi:** [`docs/prd-v1.md`](./prd-v1.md), [`CONTEXT.md`](../CONTEXT.md), [`docs/db-schema.md`](./db-schema.md), [`docs/api.md`](./api.md)
 
@@ -157,17 +157,18 @@ End-to-end auth flow: User can sign up with display name + email + password, sig
   - Header: Logo Novyl + Avatar menu (placeholder)
   - Sidebar: nav items (placeholder — Novel saya, Arsip)
 - UI copy: Bahasa Indonesia
+- No custom API routes — Supabase Auth handles signup/signin/signout directly via client library
 
 #### Acceptance criteria
 
-- [ ] User can sign up with display name, email, password
-- [ ] User can sign in with email + password
-- [ ] User can sign out (redirect to `/login`)
-- [ ] Unauthenticated users redirected to `/login`
-- [ ] `/` redirects to `/novels` when authenticated
-- [ ] App shell layout renders (sidebar + header)
-- [ ] No email verification or forgot password flow
-- [ ] `npm run build` passes
+- [x] User can sign up with display name, email, password
+- [x] User can sign in with email + password
+- [x] User can sign out (redirect to `/login`)
+- [x] Unauthenticated users redirected to `/login`
+- [x] `/` redirects to `/novels` when authenticated
+- [x] App shell layout renders (sidebar + header)
+- [x] No email verification or forgot password flow
+- [x] `npm run build` passes
 
 ---
 
