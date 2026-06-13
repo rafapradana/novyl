@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { BookOpenIcon, ArchiveIcon, LogOutIcon } from "lucide-react";
+import { BookOpenIcon, ArchiveIcon, PlusIcon, LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -15,10 +15,6 @@ import { DockItem } from "@/components/dock-item";
 
 const NOVELS_PATH = "/novels";
 const ARCHIVED_PATH = "/novels?archived=true";
-
-const MAX_SCALE = 1.4;
-const MAGNETIC_RANGE = 120;
-const ITEM_COUNT = 3;
 
 interface NavDockProps {
   readonly user: {
@@ -36,16 +32,6 @@ function extractInitials(displayName: string): string {
     .slice(0, 2);
 }
 
-function calculateScale(distance: number): number {
-  if (distance > MAGNETIC_RANGE) return 1;
-  const ratio = 1 - distance / MAGNETIC_RANGE;
-  return 1 + (MAX_SCALE - 1) * ratio;
-}
-
-function createDefaultScales(): number[] {
-  return Array.from({ length: ITEM_COUNT }, () => 1);
-}
-
 async function signOutAndRedirect(router: ReturnType<typeof useRouter>) {
   const supabase = createClient();
   await supabase.auth.signOut();
@@ -58,32 +44,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
   const isArchivedView = searchParams.get("archived") === "true";
   const initials = extractInitials(user.displayName);
 
-  const [scales, setScales] = useState<number[]>(createDefaultScales);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const dockRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (!dockRef.current) return;
-
-      const items = dockRef.current.querySelectorAll<HTMLElement>("[data-dock-item]");
-      const mouseX = event.clientX;
-
-      const newScales = Array.from(items).map((item) => {
-        const rect = item.getBoundingClientRect();
-        const itemCenterX = rect.left + rect.width / 2;
-        const distance = Math.abs(mouseX - itemCenterX);
-        return calculateScale(distance);
-      });
-
-      setScales(newScales);
-    },
-    []
-  );
-
-  const handleMouseLeave = useCallback(() => {
-    setScales(createDefaultScales());
-  }, []);
 
   function navigateToActive() {
     router.push(NOVELS_PATH);
@@ -95,48 +56,45 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
 
   return (
     <>
-      <nav className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-        <div
-          ref={dockRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl overflow-visible"
+      {/* FAB — Novel baru — visible when not archived */}
+      {!isArchivedView && (
+        <button
+          type="button"
+          disabled
+          className="fixed bottom-24 right-4 z-50 flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg md:hidden"
         >
-          <div data-dock-item>
-            <DockItem
-              label="Novel saya"
-              isActive={!isArchivedView}
-              scale={scales[0] ?? 1}
-              onClick={navigateToActive}
-            >
-              <BookOpenIcon className="size-5" />
-            </DockItem>
-          </div>
+          <PlusIcon className="size-6" />
+        </button>
+      )}
 
-          <div data-dock-item>
-            <DockItem
-              label="Arsip"
-              isActive={isArchivedView}
-              scale={scales[1] ?? 1}
-              onClick={navigateToArchived}
-            >
-              <ArchiveIcon className="size-5" />
-            </DockItem>
-          </div>
+      <nav className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+        <div className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl">
+          <DockItem
+            label="Novel saya"
+            isActive={!isArchivedView}
+            onClick={navigateToActive}
+          >
+            <BookOpenIcon className="size-5" />
+          </DockItem>
 
-          <div data-dock-item>
-            <DockItem
-              label="Profil"
-              scale={scales[2] ?? 1}
-              onClick={() => setIsProfileOpen(true)}
-            >
-              <Avatar className="size-7 rounded-lg">
-                <AvatarFallback className="rounded-lg text-[10px]">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </DockItem>
-          </div>
+          <DockItem
+            label="Arsip"
+            isActive={isArchivedView}
+            onClick={navigateToArchived}
+          >
+            <ArchiveIcon className="size-5" />
+          </DockItem>
+
+          <DockItem
+            label="Profil"
+            onClick={() => setIsProfileOpen(true)}
+          >
+            <Avatar className="size-6 rounded-md">
+              <AvatarFallback className="rounded-md text-[10px]">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </DockItem>
         </div>
       </nav>
 
