@@ -125,12 +125,12 @@ All database objects for v1: extensions, enum types, 9 tables, RLS policies, hel
 
 #### Acceptance criteria
 
-- [ ] `supabase db reset` passes locally with all migrations
-- [ ] All 9 tables created with correct columns, constraints, and types
-- [ ] RLS enabled on every table; helper functions work
-- [ ] Triggers fire correctly: `updated_at`, `handle_new_user`, `compute_outline_hash`, `flag_downstream_chapters`
-- [ ] HNSW index on `chapter_summary_embeddings` created
-- [ ] `npm run build` passes
+- [x] `supabase db reset` passes locally with all migrations
+- [x] All 9 tables created with correct columns, constraints, and types
+- [x] RLS enabled on every table; helper functions work
+- [x] Triggers fire correctly: `updated_at`, `handle_new_user`, `compute_outline_hash`, `flag_downstream_chapters`
+- [x] HNSW index on `chapter_summary_embeddings` created
+- [x] `npm run build` passes
 
 ---
 
