@@ -26,7 +26,7 @@ export function DockItem({
       className={cn(
         "flex items-center gap-2 rounded-xl px-3 py-2 transition-colors",
         isActive
-          ? "bg-primary/15 text-primary"
+          ? "bg-primary text-primary-foreground"
           : "text-muted-foreground hover:bg-muted"
       )}
       aria-label={label}

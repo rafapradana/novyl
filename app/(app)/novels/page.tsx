@@ -74,13 +74,13 @@ export default async function NovelsPage({ searchParams }: NovelsPageProps) {
               className="pl-8 h-9"
             />
           </div>
-          <Button type="submit" variant="secondary" size="sm">
+          <Button type="submit" variant="secondary">
             <SearchIcon />
             Cari
           </Button>
         </form>
         {!isArchivedView && (
-          <Button size="sm" disabled className="hidden md:inline-flex">
+          <Button disabled className="hidden md:inline-flex">
             <PlusIcon />
             Novel baru
           </Button>
