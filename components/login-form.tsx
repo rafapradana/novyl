@@ -63,12 +63,30 @@ async function signUpWithDisplayName(
   displayName: string
 ): Promise<string | null> {
   const supabase = createClient();
-  const { error } = await supabase.auth.signUp({
+  const { error: signUpError } = await supabase.auth.signUp({
     email,
     password,
     options: { data: { display_name: displayName } },
   });
-  return error ? extractErrorMessage(error) : null;
+
+  if (signUpError) {
+    return extractErrorMessage(signUpError);
+  }
+
+  // signUp() may not establish a session (e.g. email confirmation delay).
+  // Explicitly signIn to guarantee session cookies are set before redirect.
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) {
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (signInError) {
+      return extractErrorMessage(signInError);
+    }
+  }
+
+  return null;
 }
 
 function getDescriptionText(isSignIn: boolean): string {
@@ -118,6 +136,17 @@ export function LoginForm({ className, ...props }: LoginFormProps): React.JSX.El
 
     if (authError) {
       setErrorMessage(authError);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Verify session exists before redirecting — prevents stuck button
+    // if signUp() succeeded but session wasn't established.
+    const supabase = createClient();
+    const { data: sessionData } = await supabase.auth.getSession();
+
+    if (!sessionData.session) {
+      setErrorMessage("Gagal membuat sesi. Silakan coba masuk secara manual.");
       setIsSubmitting(false);
       return;
     }
