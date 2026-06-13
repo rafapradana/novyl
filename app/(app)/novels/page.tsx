@@ -1,5 +1,11 @@
-import { BookOpenIcon, ArchiveIcon, PlusIcon, SearchIcon } from "lucide-react";
+import {
+  BookOpenIcon,
+  ArchiveIcon,
+  PlusIcon,
+  SearchIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface NovelsPageProps {
   readonly searchParams: Promise<{ archived?: string }>;
@@ -57,6 +63,31 @@ export default async function NovelsPage({ searchParams }: NovelsPageProps) {
 
   return (
     <div className="flex flex-1 flex-col">
+      {/* Toolbar: search + Novel baru */}
+      <div className="flex items-center gap-3 border-b px-4 py-3">
+        <form className="flex items-center gap-2 flex-1">
+          <div className="relative flex-1 max-w-sm">
+            <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder={isArchivedView ? "Cari novel diarsipkan..." : "Cari novel..."}
+              className="pl-8 h-9"
+            />
+          </div>
+          <Button type="submit" variant="secondary" size="sm">
+            <SearchIcon />
+            Cari
+          </Button>
+        </form>
+        {!isArchivedView && (
+          <Button size="sm" disabled>
+            <PlusIcon />
+            <span className="hidden sm:inline">Novel baru</span>
+          </Button>
+        )}
+      </div>
+
+      {/* Content */}
       {isArchivedView ? <ArchivedEmptyState /> : <ActiveNovelsEmptyState />}
     </div>
   );

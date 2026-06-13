@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Avatar,
@@ -22,16 +20,13 @@ import {
 import {
   BookOpenIcon,
   ArchiveIcon,
-  PlusIcon,
-  SearchIcon,
   SettingsIcon,
   LogOutIcon,
 } from "lucide-react";
-import { useState } from "react";
 
 const NOVELS_PATH = "/novels";
-const ARCHIVED_TAB = "archived";
 const ACTIVE_TAB = "active";
+const ARCHIVED_TAB = "archived";
 
 interface AppHeaderProps {
   readonly user: {
@@ -62,15 +57,10 @@ async function signOutAndRedirect(router: ReturnType<typeof useRouter>) {
 
 export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
   const router = useRouter();
-  const pathname = usePathname();
   const isArchivedView = useIsArchivedView();
   const initials = extractInitials(user.displayName);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   const activeTab = isArchivedView ? ARCHIVED_TAB : ACTIVE_TAB;
-  const isNovelsPage = pathname === NOVELS_PATH;
 
   function handleTabChange(tab: string) {
     if (tab === ARCHIVED_TAB) {
@@ -80,14 +70,9 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
     }
   }
 
-  function handleSearchSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    // Search will be implemented in S4 with actual novel data
-  }
-
   return (
-    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 gap-2">
-      {/* Logo */}
+    <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+      {/* Left: logo + name */}
       <Link
         href={NOVELS_PATH}
         className="flex items-center gap-2 font-semibold text-sm shrink-0"
@@ -98,13 +83,9 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
         <span className="hidden sm:inline">Novyl</span>
       </Link>
 
-      {/* Tabs — desktop only */}
-      {isNovelsPage && (
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="hidden md:flex ml-4"
-        >
+      {/* Center: tabs */}
+      <div className="flex-1 flex justify-center">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value={ACTIVE_TAB} className="gap-1.5">
               <BookOpenIcon />
@@ -116,59 +97,23 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      )}
+      </div>
 
-      <div className="flex-1" />
-
-      {/* Search + Novel baru — desktop */}
-      {isNovelsPage && (
-        <div className="hidden md:flex items-center gap-2">
-          <form onSubmit={handleSearchSubmit} className="flex items-center gap-1.5">
-            <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari novel..."
-                className="pl-8 w-48 h-8"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-              />
-            </div>
-            <Button type="submit" variant="ghost" size="icon" className="size-8">
-              <SearchIcon />
-            </Button>
-          </form>
-          <Button size="sm" disabled>
-            <PlusIcon />
-            Novel baru
-          </Button>
-        </div>
-      )}
-
-      {/* Search toggle — mobile */}
-      {isNovelsPage && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden size-8"
-          onClick={() => setIsSearchOpen(!isSearchOpen)}
-        >
-          <SearchIcon />
-        </Button>
-      )}
-
-      {/* Avatar */}
+      {/* Right: avatar + name */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="flex items-center gap-2 rounded-md p-1 hover:bg-accent transition-colors"
+            className="flex items-center gap-2 rounded-md p-1.5 hover:bg-accent transition-colors shrink-0"
           >
             <Avatar className="size-7 rounded-md">
               <AvatarFallback className="rounded-md text-xs">
                 {initials}
               </AvatarFallback>
             </Avatar>
+            <span className="text-sm hidden sm:inline">
+              {user.displayName}
+            </span>
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-fit" align="end" sideOffset={8}>
@@ -201,28 +146,6 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Mobile search bar — expandable */}
-      {isNovelsPage && isSearchOpen && (
-        <div className="absolute top-14 left-0 right-0 border-b bg-background p-3 md:hidden">
-          <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari novel..."
-                className="pl-8 h-9"
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                autoFocus
-              />
-            </div>
-            <Button type="submit" size="sm">
-              Cari
-            </Button>
-          </form>
-        </div>
-      )}
     </header>
   );
 }
