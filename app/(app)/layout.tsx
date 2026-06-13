@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/app-header";
-import { MobileNav } from "@/components/mobile-nav";
+import { NavDock } from "@/components/nav-dock";
 
 const LOGIN_PATH = "/login";
 
@@ -23,13 +23,11 @@ export default async function AppLayout({
     user.user_metadata?.display_name ?? user.email ?? "User";
   const email = user.email ?? "";
 
-  const userProps = { displayName, email };
-
   return (
     <div className="flex min-h-svh flex-col">
-      <AppHeader user={userProps} />
-      <main className="flex flex-1 flex-col pb-16 md:pb-0">{children}</main>
-      <MobileNav user={userProps} />
+      <AppHeader />
+      <main className="flex flex-1 flex-col pb-20">{children}</main>
+      <NavDock user={{ displayName, email }} />
     </div>
   );
 }
