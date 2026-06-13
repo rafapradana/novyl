@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { BookOpenIcon, ArchiveIcon, PlusIcon, LogOutIcon } from "lucide-react";
+import { BookOpenIcon, ArchiveIcon, PlusIcon, SettingsIcon, LogOutIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Sheet,
@@ -11,7 +11,16 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DockItem } from "@/components/dock-item";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const NOVELS_PATH = "/novels";
 const ARCHIVED_PATH = "/novels?archived=true";
@@ -42,9 +51,10 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isArchivedView = searchParams.get("archived") === "true";
+  const isMobile = useIsMobile();
   const initials = extractInitials(user.displayName);
 
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   function navigateToActive() {
     router.push(NOVELS_PATH);
@@ -56,7 +66,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
 
   return (
     <>
-      {/* FAB — Novel baru — visible when not archived */}
+      {/* FAB — Novel baru — mobile only */}
       {!isArchivedView && (
         <button
           type="button"
@@ -85,21 +95,65 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
             <ArchiveIcon className="size-5" />
           </DockItem>
 
-          <DockItem
-            label="Profil"
-            onClick={() => setIsProfileOpen(true)}
-          >
-            <Avatar className="size-6 rounded-md">
-              <AvatarFallback className="rounded-md text-[10px]">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </DockItem>
+          {/* Desktop: DropdownMenu, Mobile: triggers Sheet */}
+          {isMobile ? (
+            <DockItem
+              label="Profil"
+              onClick={() => setIsSheetOpen(true)}
+            >
+              <Avatar className="size-6 rounded-md">
+                <AvatarFallback className="rounded-md text-[10px]">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </DockItem>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div>
+                  <DockItem label="Profil">
+                    <Avatar className="size-6 rounded-md">
+                      <AvatarFallback className="rounded-md text-[10px]">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DockItem>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" side="top" sideOffset={12}>
+                <DropdownMenuLabel className="p-0 font-normal">
+                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                    <Avatar className="size-8 rounded-lg">
+                      <AvatarFallback className="rounded-lg">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid flex-1 text-left text-sm leading-tight">
+                      <span className="truncate font-medium">{user.displayName}</span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {user.email}
+                      </span>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled>
+                  <SettingsIcon />
+                  Pengaturan akun
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => signOutAndRedirect(router)}>
+                  <LogOutIcon />
+                  Keluar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </nav>
 
-      {/* Profile sheet */}
-      <Sheet open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+      {/* Profile sheet — mobile only */}
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-2 gap-0">
           <SheetTitle className="sr-only">Profil</SheetTitle>
           <SheetDescription className="sr-only">
@@ -129,7 +183,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
               disabled
               className="flex items-center gap-3 px-2 py-3 text-sm text-muted-foreground rounded-md"
             >
-              <LogOutIcon className="size-4" />
+              <SettingsIcon className="size-4" />
               Pengaturan akun
             </button>
             <button
