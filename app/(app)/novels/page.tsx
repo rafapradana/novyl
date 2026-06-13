@@ -80,9 +80,9 @@ export default async function NovelsPage({ searchParams }: NovelsPageProps) {
           </Button>
         </form>
         {!isArchivedView && (
-          <Button size="sm" disabled>
+          <Button size="sm" disabled className="hidden md:inline-flex">
             <PlusIcon />
-            <span className="hidden sm:inline">Novel baru</span>
+            Novel baru
           </Button>
         )}
       </div>

@@ -83,8 +83,8 @@ export function AppHeader({ user }: AppHeaderProps): React.JSX.Element {
         <span className="hidden sm:inline">Novyl</span>
       </Link>
 
-      {/* Center: tabs */}
-      <div className="flex-1 flex justify-center">
+      {/* Center: tabs — desktop only */}
+      <div className="flex-1 hidden md:flex justify-center">
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value={ACTIVE_TAB} className="gap-1.5">
