@@ -36,7 +36,7 @@ function extractErrorMessage(error: unknown): string {
   return GENERIC_AUTH_ERROR;
 }
 
-function clearFormFields(): {
+function createEmptyFormValues(): {
   displayName: string;
   email: string;
   password: string;
@@ -118,7 +118,7 @@ export function LoginForm({ className, ...props }: LoginFormProps): React.JSX.El
 
   function switchToTab(tab: string) {
     setActiveTab(tab as AuthTab);
-    const cleared = clearFormFields();
+    const cleared = createEmptyFormValues();
     setDisplayName(cleared.displayName);
     setEmail(cleared.email);
     setPassword(cleared.password);

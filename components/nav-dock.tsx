@@ -78,7 +78,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
       )}
 
       <nav className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
-        <div           className="flex items-center gap-2 rounded-3xl border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl">
+        <div className="flex items-center gap-2 rounded-3xl border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl">
           <DockItem
             label="Novel saya"
             isActive={!isArchivedView}
