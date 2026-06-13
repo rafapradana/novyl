@@ -64,9 +64,9 @@ export default async function NovelsPage({ searchParams }: NovelsPageProps) {
   return (
     <div className="flex flex-1 flex-col">
       {/* Toolbar: search + Novel baru */}
-      <div className="flex items-center gap-3 border-b px-4 py-3">
-        <form className="flex items-center gap-2 flex-1">
-          <div className="relative flex-1 max-w-sm">
+      <div className="flex items-center justify-center gap-3 px-4 py-3">
+        <form className="flex items-center gap-2">
+          <div className="relative w-64">
             <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               type="search"
