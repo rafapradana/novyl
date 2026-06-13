@@ -17,9 +17,9 @@ import { DockItem } from "@/components/dock-item";
 const NOVELS_PATH = "/novels";
 const ARCHIVED_PATH = "/novels?archived=true";
 
-const BASE_SIZE = 48;
-const MAX_SCALE = 1.6;
-const MAGNETIC_RANGE = 150;
+const MAX_SCALE = 1.4;
+const MAGNETIC_RANGE = 120;
+const ITEM_COUNT = 3;
 
 interface NavDockProps {
   readonly user: {
@@ -43,6 +43,10 @@ function calculateScale(distance: number): number {
   return 1 + (MAX_SCALE - 1) * ratio;
 }
 
+function createDefaultScales(): number[] {
+  return Array.from({ length: ITEM_COUNT }, () => 1);
+}
+
 async function signOutAndRedirect(router: ReturnType<typeof useRouter>) {
   const supabase = createClient();
   await supabase.auth.signOut();
@@ -55,7 +59,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
   const isArchivedView = searchParams.get("archived") === "true";
   const initials = extractInitials(user.displayName);
 
-  const [scales, setScales] = useState<readonly number[]>([1, 1, 1]);
+  const [scales, setScales] = useState<number[]>(createDefaultScales);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dockRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +83,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
   );
 
   const handleMouseLeave = useCallback(() => {
-    setScales([1, 1, 1]);
+    setScales(createDefaultScales());
   }, []);
 
   function navigateToActive() {
@@ -97,7 +101,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
           ref={dockRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="flex items-end gap-2 rounded-2xl border bg-background/80 px-3 pb-2 pt-2.5 shadow-lg backdrop-blur-xl"
+          className="flex items-center gap-1 rounded-2xl border bg-background/80 px-2 py-1.5 shadow-lg backdrop-blur-xl overflow-visible"
         >
           <div data-dock-item>
             <DockItem
@@ -121,7 +125,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
             </DockItem>
           </div>
 
-          <Separator orientation="vertical" className="mx-1 h-8 self-center" />
+          <Separator orientation="vertical" className="mx-1 h-6" />
 
           <div data-dock-item>
             <DockItem
@@ -129,8 +133,8 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
               scale={scales[2] ?? 1}
               onClick={() => setIsProfileOpen(true)}
             >
-              <Avatar className="size-8 rounded-xl">
-                <AvatarFallback className="rounded-xl text-xs">
+              <Avatar className="size-7 rounded-lg">
+                <AvatarFallback className="rounded-lg text-[10px]">
                   {initials}
                 </AvatarFallback>
               </Avatar>
