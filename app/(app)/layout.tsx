@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AppSidebar } from "@/components/app-sidebar";
 import { AppHeader } from "@/components/app-header";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { MobileNav } from "@/components/mobile-nav";
 
 const LOGIN_PATH = "/login";
 
@@ -25,12 +24,10 @@ export default async function AppLayout({
   const email = user.email ?? "";
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <AppHeader user={{ displayName, email }} />
-        <main className="flex flex-1 flex-col">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex min-h-svh flex-col">
+      <AppHeader user={{ displayName, email }} />
+      <main className="flex flex-1 flex-col pb-16 md:pb-0">{children}</main>
+      <MobileNav />
+    </div>
   );
 }
