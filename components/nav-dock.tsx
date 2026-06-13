@@ -95,12 +95,12 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
 
   return (
     <>
-      <nav className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2">
+      <nav className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
         <div
           ref={dockRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="flex items-center gap-1 rounded-2xl border bg-background/80 px-2 py-1.5 shadow-lg backdrop-blur-xl overflow-visible"
+          className="flex items-center gap-2 rounded-2xl border bg-background/80 px-3 py-2 shadow-lg backdrop-blur-xl overflow-visible"
         >
           <div data-dock-item>
             <DockItem
