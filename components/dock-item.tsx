@@ -12,8 +12,8 @@ interface DockItemProps {
 
 /**
  * Single item inside NavDock.
- * The whole item (icon + label) scales together via CSS transform.
- * Only the visual representation grows — no layout shift.
+ * Icon + label side by side, both inside one container.
+ * Whole item scales together via CSS transform.
  */
 export function DockItem({
   label,
@@ -27,23 +27,18 @@ export function DockItem({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-1 rounded-xl px-2 py-1.5 transition-colors origin-bottom",
+        "flex items-center gap-2 rounded-xl px-3 py-2 origin-bottom transition-colors",
         isActive
-          ? "text-primary"
-          : "text-muted-foreground"
+          ? "bg-primary/15 text-primary"
+          : "text-muted-foreground hover:bg-muted"
       )}
       style={{ transform: `scale(${scale})` }}
       aria-label={label}
     >
-      <div
-        className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-xl",
-          isActive ? "bg-primary/15" : "bg-muted/80"
-        )}
-      >
+      <div className="flex size-6 shrink-0 items-center justify-center">
         {children}
       </div>
-      <span className="text-[10px] font-medium whitespace-nowrap">
+      <span className="text-xs font-medium whitespace-nowrap">
         {label}
       </span>
     </button>

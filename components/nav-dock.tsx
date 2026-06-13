@@ -11,7 +11,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
 import { DockItem } from "@/components/dock-item";
 
 const NOVELS_PATH = "/novels";
@@ -125,8 +124,6 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
             </DockItem>
           </div>
 
-          <Separator orientation="vertical" className="mx-1 h-6" />
-
           <div data-dock-item>
             <DockItem
               label="Profil"
@@ -166,7 +163,7 @@ export function NavDock({ user }: NavDockProps): React.JSX.Element {
             <span className="text-xs text-muted-foreground">{user.email}</span>
           </div>
 
-          <Separator />
+          <div className="border-t" />
 
           <div className="flex flex-col pt-2">
             <button
